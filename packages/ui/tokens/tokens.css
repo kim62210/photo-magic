@@ -1,0 +1,412 @@
+/**
+ * photo-magic — Editorial Film Studio Design Tokens
+ *
+ * Tier 1: Primitive  (--cream-*, --charcoal-*, --rust-*, ...)
+ * Tier 2: Semantic   (--color-bg-base, --color-fg-default, ...)
+ * Tier 3: Component  (--btn-primary-bg, --slider-track, ...)
+ *
+ * UI 코드에서는 Tier 2/3만 참조. Tier 1 직접 사용 금지.
+ */
+
+:root {
+  /* ─── Tier 1: Primitive Color Scales ─────────────────── */
+
+  /* Cream — 라이트 베이스 */
+  --cream-50:  #FAF7F2;
+  --cream-100: #F4EFE7;
+  --cream-200: #E8DFD0;
+  --cream-300: #D4C7B4;
+  --cream-400: #B5A48D;
+  --cream-500: #8B7A63;
+  --cream-600: #5F5240;
+  --cream-700: #3D3528;
+  --cream-800: #211C15;
+  --cream-900: #0E0C09;
+
+  /* Charcoal — 다크 베이스 */
+  --charcoal-50:  #2A2520;
+  --charcoal-100: #1F1B16;
+  --charcoal-200: #1A1612;
+  --charcoal-300: #15120E;
+  --charcoal-400: #100D0A;
+
+  /* Accents */
+  --rust-300:  #E5946D;
+  --rust-500:  #C4633A;
+  --rust-700:  #8E4424;
+
+  --moss-300:  #B5C29A;
+  --moss-500:  #6B7A45;
+  --moss-700:  #3F4827;
+
+  --amber-300: #E8C9A1;
+  --amber-500: #D4A574;
+  --amber-700: #9B7340;
+
+  --plum-300:  #A589A0;
+  --plum-500:  #6B4A5F;
+  --plum-700:  #3F2A38;
+
+  /* Semantic State */
+  --state-success: #5C7A4F;
+  --state-warning: #C19A4D;
+  --state-danger:  #B45C4F;
+  --state-info:    #5C7A8B;
+
+  --state-success-soft: rgba(92, 122, 79, 0.12);
+  --state-warning-soft: rgba(193, 154, 77, 0.12);
+  --state-danger-soft:  rgba(180, 92, 79, 0.12);
+  --state-info-soft:    rgba(92, 122, 139, 0.12);
+
+  /* Anchors */
+  --ink:   #0A0908;
+  --paper: #FAF7F2;
+
+  /* ─── Tier 2: Semantic Tokens (Light Mode Default) ─────── */
+
+  --color-bg-base:    var(--cream-50);
+  --color-bg-subtle:  var(--cream-100);
+  --color-bg-muted:   var(--cream-200);
+  --color-bg-inverse: var(--ink);
+
+  --color-fg-default:  var(--cream-900);
+  --color-fg-muted:    var(--cream-600);
+  --color-fg-subtle:   var(--cream-500);
+  --color-fg-disabled: var(--cream-400);
+  --color-fg-inverse:  var(--paper);
+
+  --color-border-subtle:  var(--cream-200);
+  --color-border-default: var(--cream-300);
+  --color-border-strong:  var(--cream-700);
+
+  --color-accent:        var(--rust-500);
+  --color-accent-hover:  var(--rust-700);
+  --color-accent-soft:   rgba(196, 99, 58, 0.12);
+  --color-accent-on:     #FFFFFF;
+
+  --color-natural:       var(--moss-500);
+  --color-pro:           var(--amber-500);
+  --color-pro-plus:      var(--plum-500);
+
+  --color-success: var(--state-success);
+  --color-warning: var(--state-warning);
+  --color-danger:  var(--state-danger);
+  --color-info:    var(--state-info);
+
+  /* Selection / Focus */
+  --color-selection-bg: var(--rust-500);
+  --color-selection-fg: #FFFFFF;
+  --shadow-focus: 0 0 0 3px rgba(196, 99, 58, 0.25);
+
+  /* ─── Tier 1: Typography Primitives ─────────────────────── */
+
+  --font-display: 'Fraunces', 'IBM Plex Serif', 'Apple SD Gothic Neo', serif;
+  --font-body-en: 'Lora', 'Newsreader', Georgia, serif;
+  --font-body-ko: 'Pretendard Variable', 'Pretendard', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-body:    var(--font-body-ko), var(--font-body-en);
+  --font-mono:    'JetBrains Mono', 'IBM Plex Mono', ui-monospace, 'SF Mono', monospace;
+
+  /* ─── Tier 2: Typography Scale ──────────────────────────── */
+
+  --text-display-3: 88px;   --leading-display-3: 92px;
+  --text-display-2: 64px;   --leading-display-2: 72px;
+  --text-display-1: 48px;   --leading-display-1: 56px;
+  --text-heading-1: 36px;   --leading-heading-1: 44px;
+  --text-heading-2: 28px;   --leading-heading-2: 36px;
+  --text-heading-3: 22px;   --leading-heading-3: 32px;
+  --text-body-lg:   18px;   --leading-body-lg:   28px;
+  --text-body:      16px;   --leading-body:      24px;
+  --text-body-sm:   14px;   --leading-body-sm:   20px;
+  --text-caption:   12px;   --leading-caption:   16px;
+  --text-overline:  11px;   --leading-overline:  16px;
+
+  --tracking-display: -0.025em;
+  --tracking-heading: -0.015em;
+  --tracking-body:    0;
+  --tracking-caption: 0.005em;
+  --tracking-overline: 0.08em;
+
+  /* ─── Spacing Scale (4px base) ──────────────────────────── */
+
+  --space-0:    0;
+  --space-px:   1px;
+  --space-0_5:  2px;
+  --space-1:    4px;
+  --space-1_5:  6px;
+  --space-2:    8px;
+  --space-3:    12px;
+  --space-4:    16px;
+  --space-5:    20px;
+  --space-6:    24px;
+  --space-8:    32px;
+  --space-10:   40px;
+  --space-12:   48px;
+  --space-16:   64px;
+  --space-20:   80px;
+  --space-24:   96px;
+  --space-32:   128px;
+  --space-48:   192px;
+
+  /* ─── Border Radius (절제) ──────────────────────────────── */
+
+  --radius-none: 0;
+  --radius-xs:   2px;
+  --radius-sm:   4px;
+  --radius-md:   8px;
+  --radius-lg:   12px;
+  --radius-pill: 9999px;
+  --radius-full: 9999px;
+
+  /* ─── Shadow ─────────────────────────────────────────────── */
+
+  --shadow-none: none;
+  --shadow-xs:   0 1px 2px rgba(10, 9, 8, 0.04);
+  --shadow-sm:   0 2px 4px rgba(10, 9, 8, 0.06);
+  --shadow-md:   0 6px 12px rgba(10, 9, 8, 0.08), 0 2px 4px rgba(10, 9, 8, 0.04);
+  --shadow-lg:   0 16px 32px rgba(10, 9, 8, 0.10), 0 6px 12px rgba(10, 9, 8, 0.06);
+  --shadow-xl:   0 32px 64px rgba(10, 9, 8, 0.12), 0 16px 32px rgba(10, 9, 8, 0.08);
+  --shadow-inset: inset 0 1px 2px rgba(10, 9, 8, 0.06);
+
+  /* ─── Z-index Layers ─────────────────────────────────────── */
+
+  --z-base:     0;
+  --z-canvas:   10;
+  --z-overlay:  50;
+  --z-toolbar:  100;
+  --z-dropdown: 200;
+  --z-sticky:   300;
+  --z-modal:    500;
+  --z-popover:  600;
+  --z-toast:    900;
+  --z-tooltip:  1000;
+  --z-grain:    9999;
+
+  /* ─── Motion ─────────────────────────────────────────────── */
+
+  --motion-instant: 80ms;
+  --motion-fast:    150ms;
+  --motion-base:    220ms;
+  --motion-slow:    320ms;
+  --motion-slower:  480ms;
+  --motion-page:    680ms;
+
+  --ease-linear:   linear;
+  --ease-out:      cubic-bezier(0.2, 0.8, 0.2, 1);
+  --ease-in:       cubic-bezier(0.4, 0, 0.6, 1);
+  --ease-in-out:   cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-spring:   cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-emphasis: cubic-bezier(0.32, 0.72, 0, 1);
+
+  /* ─── Container ──────────────────────────────────────────── */
+
+  --container-padding: 16px;
+  --container-max:     100%;
+
+  /* ─── Tier 3: Component Tokens ───────────────────────────── */
+
+  /* Button */
+  --btn-radius: var(--radius-xs);
+  --btn-font-size: var(--text-body-sm);
+  --btn-font-weight: 500;
+  --btn-height-sm: 32px;
+  --btn-height-md: 40px;
+  --btn-height-lg: 48px;
+  --btn-padding-x-sm: 12px;
+  --btn-padding-x-md: 16px;
+  --btn-padding-x-lg: 24px;
+
+  --btn-primary-bg:        var(--color-fg-default);
+  --btn-primary-fg:        var(--color-fg-inverse);
+  --btn-primary-bg-hover:  var(--cream-700);
+
+  --btn-secondary-bg:        transparent;
+  --btn-secondary-fg:        var(--color-fg-default);
+  --btn-secondary-border:    var(--color-border-default);
+  --btn-secondary-bg-hover:  var(--color-bg-subtle);
+
+  --btn-ghost-bg-hover: var(--color-bg-subtle);
+
+  --btn-accent-bg:        var(--color-accent);
+  --btn-accent-fg:        var(--color-accent-on);
+  --btn-accent-bg-hover:  var(--color-accent-hover);
+
+  /* Input */
+  --input-height:        40px;
+  --input-padding-x:     12px;
+  --input-radius:        var(--radius-xs);
+  --input-bg:            var(--color-bg-base);
+  --input-fg:            var(--color-fg-default);
+  --input-border:        var(--color-border-default);
+  --input-border-focus:  var(--color-fg-default);
+  --input-placeholder:   var(--color-fg-subtle);
+  --input-font-size:     16px; /* iOS 줌 방지 */
+
+  /* Slider */
+  --slider-track-h:        1px;
+  --slider-track-bg:       var(--color-border-default);
+  --slider-progress-bg:    var(--color-fg-default);
+  --slider-thumb-size:     16px;
+  --slider-thumb-bg:       var(--color-bg-base);
+  --slider-thumb-border:   1.5px solid var(--color-fg-default);
+  --slider-thumb-active-bg: var(--color-accent);
+
+  /* Card */
+  --card-radius:        var(--radius-xs);
+  --card-padding:       var(--space-6);
+  --card-bg:            var(--color-bg-base);
+  --card-border:        1px solid var(--color-border-subtle);
+  --card-border-hover:  1px solid var(--color-border-default);
+  --card-shadow-hover:  var(--shadow-sm);
+
+  /* Toggle Switch */
+  --toggle-track-w:      36px;
+  --toggle-track-h:      20px;
+  --toggle-thumb-size:   14px;
+  --toggle-track-bg-off: var(--color-border-default);
+  --toggle-track-bg-on:  var(--color-fg-default);
+  --toggle-thumb-bg:     var(--color-bg-base);
+
+  /* Modal */
+  --modal-backdrop:    rgba(10, 9, 8, 0.6);
+  --modal-bg:          var(--color-bg-base);
+  --modal-radius:      var(--radius-sm);
+  --modal-shadow:      var(--shadow-xl);
+  --modal-max-w-info:  480px;
+  --modal-max-w-edit:  640px;
+
+  /* Toast */
+  --toast-bg:          var(--color-fg-default);
+  --toast-fg:          var(--color-fg-inverse);
+  --toast-radius:      var(--radius-md);
+  --toast-shadow:      var(--shadow-lg);
+  --toast-padding:     var(--space-4) var(--space-5);
+  --toast-accent-w:    4px;
+
+  /* Editor Canvas */
+  --canvas-bg:           var(--color-bg-muted);
+  --canvas-checkerboard: linear-gradient(45deg, var(--cream-100) 25%, transparent 25%),
+                         linear-gradient(-45deg, var(--cream-100) 25%, transparent 25%),
+                         linear-gradient(45deg, transparent 75%, var(--cream-100) 75%),
+                         linear-gradient(-45deg, transparent 75%, var(--cream-100) 75%);
+  --canvas-checker-size: 16px;
+  --canvas-guide:        rgba(196, 99, 58, 0.5);
+
+  /* Preset Card */
+  --preset-card-w-mobile:   96px;
+  --preset-card-w-desktop:  128px;
+  --preset-card-radius:     var(--radius-xs);
+  --preset-card-border:     1.5px solid transparent;
+  --preset-card-border-active: 2px solid var(--color-accent);
+}
+
+/* ─── Dark Mode Override ──────────────────────────────────── */
+
+[data-theme="dark"] {
+  --color-bg-base:    var(--charcoal-300);
+  --color-bg-subtle:  var(--charcoal-200);
+  --color-bg-muted:   var(--charcoal-100);
+  --color-bg-inverse: var(--cream-50);
+
+  --color-fg-default:  var(--cream-50);
+  --color-fg-muted:    var(--cream-300);
+  --color-fg-subtle:   var(--cream-400);
+  --color-fg-disabled: var(--cream-600);
+  --color-fg-inverse:  var(--ink);
+
+  --color-border-subtle:  var(--charcoal-100);
+  --color-border-default: var(--charcoal-50);
+  --color-border-strong:  var(--cream-300);
+
+  /* 다크에서 액센트 채도 살짝 올림 (어두운 배경 위 가독성) */
+  --color-accent:        var(--rust-300);
+  --color-accent-hover:  #F0A688;
+  --color-accent-soft:   rgba(229, 148, 109, 0.15);
+  --color-accent-on:     var(--ink);
+
+  --color-natural:  var(--moss-300);
+  --color-pro:      var(--amber-300);
+  --color-pro-plus: var(--plum-300);
+
+  /* 그림자는 다크에서 더 진하게 */
+  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.5);
+  --shadow-md: 0 6px 12px rgba(0, 0, 0, 0.55), 0 2px 4px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 16px 32px rgba(0, 0, 0, 0.6), 0 6px 12px rgba(0, 0, 0, 0.5);
+  --shadow-xl: 0 32px 64px rgba(0, 0, 0, 0.65), 0 16px 32px rgba(0, 0, 0, 0.55);
+  --shadow-focus: 0 0 0 3px rgba(229, 148, 109, 0.35);
+
+  --modal-backdrop: rgba(0, 0, 0, 0.75);
+
+  --canvas-checkerboard: linear-gradient(45deg, var(--charcoal-100) 25%, transparent 25%),
+                         linear-gradient(-45deg, var(--charcoal-100) 25%, transparent 25%),
+                         linear-gradient(45deg, transparent 75%, var(--charcoal-100) 75%),
+                         linear-gradient(-45deg, transparent 75%, var(--charcoal-100) 75%);
+}
+
+/* 시스템 자동 (사용자가 아직 명시적 선택 안 했을 때) */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) {
+    /* dark 토큰 오버라이드 (위와 동일, 중복 정의는 빌드 시 단일화 가능) */
+    --color-bg-base:    var(--charcoal-300);
+    --color-bg-subtle:  var(--charcoal-200);
+    --color-bg-muted:   var(--charcoal-100);
+    --color-bg-inverse: var(--cream-50);
+    --color-fg-default: var(--cream-50);
+    --color-fg-muted:   var(--cream-300);
+    --color-fg-subtle:  var(--cream-400);
+    --color-fg-disabled: var(--cream-600);
+    --color-fg-inverse: var(--ink);
+    --color-border-subtle:  var(--charcoal-100);
+    --color-border-default: var(--charcoal-50);
+    --color-border-strong:  var(--cream-300);
+    --color-accent:       var(--rust-300);
+    --color-accent-hover: #F0A688;
+    --color-accent-soft:  rgba(229, 148, 109, 0.15);
+    --color-accent-on:    var(--ink);
+    --color-natural:  var(--moss-300);
+    --color-pro:      var(--amber-300);
+    --color-pro-plus: var(--plum-300);
+    --shadow-focus:   0 0 0 3px rgba(229, 148, 109, 0.35);
+    --modal-backdrop: rgba(0, 0, 0, 0.75);
+  }
+}
+
+/* ─── Container Responsive ────────────────────────────────── */
+
+@media (min-width: 768px) {
+  :root {
+    --container-padding: 32px;
+    --container-max: 720px;
+  }
+}
+@media (min-width: 1024px) {
+  :root {
+    --container-padding: 48px;
+    --container-max: 960px;
+  }
+}
+@media (min-width: 1280px) {
+  :root {
+    --container-padding: 64px;
+    --container-max: 1200px;
+  }
+}
+@media (min-width: 1536px) {
+  :root {
+    --container-padding: 64px;
+    --container-max: 1440px;
+  }
+}
+
+/* ─── Reduced Motion ──────────────────────────────────────── */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 1ms !important;
+    scroll-behavior: auto !important;
+  }
+}

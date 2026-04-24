@@ -1,0 +1,1530 @@
+<!DOCTYPE html>
+<html lang="ko" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#FAF7F2" media="(prefers-color-scheme: light)" />
+  <meta name="theme-color" content="#15120E" media="(prefers-color-scheme: dark)" />
+  <title>photo-magic — Editorial Film Studio Design System</title>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300..700&family=Lora:ital,wght@0,400..600;1,400&family=JetBrains+Mono:wght@400;500;600&display=swap"
+    rel="stylesheet"
+  />
+  <link
+    rel="stylesheet"
+    href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css"
+  />
+
+  <!-- Tokens -->
+  <link rel="stylesheet" href="../tokens/tokens.css" />
+
+  <style>
+    /* ─── Reset ─────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { -webkit-text-size-adjust: 100%; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+    body {
+      font-family: var(--font-body);
+      font-size: var(--text-body);
+      line-height: var(--leading-body);
+      color: var(--color-fg-default);
+      background: var(--color-bg-base);
+      letter-spacing: -0.01em;
+      transition: background var(--motion-base) var(--ease-out), color var(--motion-base) var(--ease-out);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+    :lang(ko) { word-break: keep-all; overflow-wrap: break-word; }
+
+    img, svg { display: block; max-width: 100%; }
+    button { font: inherit; color: inherit; background: none; border: none; cursor: pointer; }
+    a { color: inherit; }
+    input, select, textarea { font: inherit; }
+
+    ::selection { background: var(--color-accent); color: var(--color-accent-on); }
+
+    /* 스크롤바 */
+    * { scrollbar-width: thin; scrollbar-color: var(--color-border-default) transparent; }
+    *::-webkit-scrollbar { width: 8px; height: 8px; }
+    *::-webkit-scrollbar-thumb { background: var(--color-border-default); border-radius: 4px; }
+    *::-webkit-scrollbar-thumb:hover { background: var(--color-border-strong); }
+
+    /* ─── Grain Overlay (전 페이지 텍스처) ──────────────── */
+    .grain {
+      position: fixed; inset: 0;
+      z-index: var(--z-grain);
+      pointer-events: none;
+      opacity: 0.04;
+      mix-blend-mode: multiply;
+    }
+    [data-theme="dark"] .grain { opacity: 0.08; mix-blend-mode: screen; }
+
+    /* ─── Layout ─────────────────────────────────────────── */
+    .container {
+      width: 100%;
+      max-width: var(--container-max);
+      margin-inline: auto;
+      padding-inline: var(--container-padding);
+    }
+
+    /* ─── Top Bar ────────────────────────────────────────── */
+    .topbar {
+      position: sticky; top: 0; z-index: var(--z-sticky);
+      backdrop-filter: blur(10px) saturate(140%);
+      background: color-mix(in srgb, var(--color-bg-base) 80%, transparent);
+      border-bottom: 1px solid var(--color-border-subtle);
+      padding-block: var(--space-3);
+    }
+    .topbar__inner {
+      display: flex; align-items: center; justify-content: space-between; gap: var(--space-4);
+    }
+    .brand {
+      display: flex; align-items: baseline; gap: var(--space-2);
+      font-family: var(--font-display);
+      font-size: 22px;
+      font-weight: 500;
+      letter-spacing: -0.02em;
+      font-variation-settings: 'opsz' 28, 'SOFT' 30, 'WONK' 1;
+    }
+    .brand__sub {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--color-fg-subtle);
+    }
+    .topbar__actions { display: flex; align-items: center; gap: var(--space-2); }
+
+    .theme-toggle {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 40px; height: 40px;
+      border-radius: var(--radius-pill);
+      border: 1px solid var(--color-border-default);
+      transition: background var(--motion-fast) var(--ease-out),
+                  border-color var(--motion-fast) var(--ease-out),
+                  transform var(--motion-fast) var(--ease-out);
+    }
+    .theme-toggle:hover { background: var(--color-bg-subtle); border-color: var(--color-border-strong); }
+    .theme-toggle:active { transform: scale(0.96); }
+    .theme-toggle svg { width: 18px; height: 18px; stroke-width: 1.5; }
+    .theme-toggle .icon-moon { display: none; }
+    [data-theme="dark"] .theme-toggle .icon-sun { display: none; }
+    [data-theme="dark"] .theme-toggle .icon-moon { display: block; }
+
+    /* ─── Hero ───────────────────────────────────────────── */
+    .hero {
+      padding-block: clamp(var(--space-12), 8vw, var(--space-32));
+      position: relative;
+    }
+    .hero__overline {
+      font-family: var(--font-mono);
+      font-size: var(--text-overline);
+      font-weight: 600;
+      letter-spacing: var(--tracking-overline);
+      text-transform: uppercase;
+      color: var(--color-fg-muted);
+      margin-bottom: var(--space-6);
+      display: flex; align-items: center; gap: var(--space-3);
+    }
+    .hero__overline::before, .hero__overline::after {
+      content: ''; flex: 1 1 0; max-width: 80px;
+      height: 1px; background: var(--color-border-default);
+    }
+    .hero__title {
+      font-family: var(--font-display);
+      font-weight: 400;
+      font-size: clamp(40px, 7vw, 88px);
+      line-height: 1.05;
+      letter-spacing: -0.04em;
+      color: var(--color-fg-default);
+      max-width: 16ch;
+      margin-inline: auto;
+      text-align: center;
+      font-variation-settings: 'opsz' 144, 'SOFT' 50, 'WONK' 1;
+      animation: hero-in var(--motion-page) var(--ease-emphasis) both;
+    }
+    .hero__title em {
+      font-style: italic;
+      color: var(--color-accent);
+      font-variation-settings: 'opsz' 144, 'SOFT' 100, 'WONK' 1;
+    }
+    .hero__sub {
+      font-family: var(--font-body);
+      font-size: clamp(16px, 1.6vw, 18px);
+      line-height: 1.6;
+      color: var(--color-fg-muted);
+      max-width: 52ch;
+      margin: var(--space-6) auto 0;
+      text-align: center;
+      animation: hero-in var(--motion-page) var(--ease-emphasis) 80ms both;
+    }
+    .hero__meta {
+      margin-top: var(--space-10);
+      display: flex; justify-content: center; gap: var(--space-6);
+      flex-wrap: wrap;
+      font-family: var(--font-mono);
+      font-size: var(--text-caption);
+      color: var(--color-fg-subtle);
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      animation: hero-in var(--motion-page) var(--ease-emphasis) 160ms both;
+    }
+    .hero__meta span { display: inline-flex; align-items: center; gap: var(--space-2); }
+    .hero__meta span::before {
+      content: ''; width: 4px; height: 4px; background: var(--color-accent);
+    }
+
+    @keyframes hero-in {
+      from { opacity: 0; transform: translateY(12px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ─── Section ────────────────────────────────────────── */
+    .section {
+      padding-block: var(--space-16);
+      border-top: 1px solid var(--color-border-subtle);
+    }
+    .section__head { margin-bottom: var(--space-10); }
+    .section__num {
+      font-family: var(--font-mono);
+      font-size: var(--text-overline);
+      font-weight: 600;
+      letter-spacing: var(--tracking-overline);
+      text-transform: uppercase;
+      color: var(--color-accent);
+      margin-bottom: var(--space-3);
+    }
+    .section__title {
+      font-family: var(--font-display);
+      font-size: clamp(28px, 4vw, 48px);
+      line-height: 1.1;
+      letter-spacing: var(--tracking-display);
+      font-variation-settings: 'opsz' 72, 'SOFT' 50, 'WONK' 0;
+      max-width: 24ch;
+    }
+    .section__desc {
+      margin-top: var(--space-4);
+      max-width: 52ch;
+      font-size: var(--text-body-lg);
+      line-height: var(--leading-body-lg);
+      color: var(--color-fg-muted);
+    }
+
+    /* ─── 1. Color Palette ─────────────────────────────── */
+    .palette {
+      display: grid;
+      gap: var(--space-8);
+    }
+    .palette__group h3 {
+      font-family: var(--font-mono);
+      font-size: var(--text-overline);
+      font-weight: 600;
+      letter-spacing: var(--tracking-overline);
+      text-transform: uppercase;
+      color: var(--color-fg-muted);
+      margin-bottom: var(--space-4);
+      padding-bottom: var(--space-3);
+      border-bottom: 1px solid var(--color-border-subtle);
+    }
+    .swatches {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+      gap: var(--space-3);
+    }
+    .swatch {
+      display: flex; flex-direction: column;
+      border-radius: var(--radius-xs);
+      overflow: hidden;
+      border: 1px solid var(--color-border-subtle);
+      transition: transform var(--motion-fast) var(--ease-out),
+                  box-shadow var(--motion-fast) var(--ease-out);
+    }
+    .swatch:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+    .swatch__color {
+      aspect-ratio: 4 / 3;
+      width: 100%;
+    }
+    .swatch__meta {
+      padding: var(--space-3);
+      background: var(--color-bg-base);
+      font-family: var(--font-mono);
+      font-size: 11px;
+      line-height: 1.4;
+    }
+    .swatch__name { color: var(--color-fg-default); font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; }
+    .swatch__hex { color: var(--color-fg-subtle); margin-top: 2px; }
+
+    /* ─── 2. Typography ────────────────────────────────── */
+    .type-spec {
+      display: grid;
+      gap: var(--space-8);
+    }
+    .type-row {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: var(--space-4);
+      padding-block: var(--space-4);
+      border-bottom: 1px solid var(--color-border-subtle);
+      align-items: baseline;
+    }
+    @media (min-width: 768px) {
+      .type-row { grid-template-columns: 200px 1fr 200px; gap: var(--space-6); }
+    }
+    .type-row__meta {
+      font-family: var(--font-mono);
+      font-size: var(--text-caption);
+      color: var(--color-fg-subtle);
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      line-height: 1.4;
+    }
+    .type-row__sample { color: var(--color-fg-default); }
+    .type-row__sample em { font-style: italic; color: var(--color-accent); }
+    .type-row__values {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--color-fg-subtle);
+      letter-spacing: 0.02em;
+    }
+
+    .display-3 { font-family: var(--font-display); font-size: 88px; line-height: 92px; letter-spacing: -0.04em; font-weight: 400; font-variation-settings: 'opsz' 144, 'SOFT' 100, 'WONK' 1; }
+    .display-2 { font-family: var(--font-display); font-size: 64px; line-height: 72px; letter-spacing: -0.03em; font-weight: 400; font-variation-settings: 'opsz' 96, 'SOFT' 80, 'WONK' 0; }
+    .display-1 { font-family: var(--font-display); font-size: 48px; line-height: 56px; letter-spacing: -0.02em; font-weight: 500; font-variation-settings: 'opsz' 72, 'SOFT' 50; }
+    .heading-1 { font-family: var(--font-display); font-size: 36px; line-height: 44px; letter-spacing: -0.015em; font-weight: 500; font-variation-settings: 'opsz' 36, 'SOFT' 30; }
+    .heading-2 { font-family: var(--font-display); font-size: 28px; line-height: 36px; letter-spacing: -0.01em; font-weight: 600; }
+    .heading-3 { font-family: var(--font-display); font-size: 22px; line-height: 32px; font-weight: 600; }
+    .body-lg { font-family: var(--font-body); font-size: 18px; line-height: 28px; }
+    .body-norm { font-family: var(--font-body); font-size: 16px; line-height: 24px; }
+    .body-sm { font-family: var(--font-body); font-size: 14px; line-height: 20px; letter-spacing: 0.005em; }
+    .caption { font-family: var(--font-body); font-size: 12px; line-height: 16px; letter-spacing: 0.01em; font-weight: 500; }
+    .overline { font-family: var(--font-mono); font-size: 11px; line-height: 16px; letter-spacing: 0.08em; text-transform: uppercase; font-weight: 600; }
+
+    /* ─── 3. Spacing & Radius ──────────────────────────── */
+    .scales {
+      display: grid;
+      gap: var(--space-8);
+      grid-template-columns: 1fr;
+    }
+    @media (min-width: 768px) {
+      .scales { grid-template-columns: 1fr 1fr; }
+    }
+    .scale-card { background: var(--color-bg-subtle); border-radius: var(--radius-xs); padding: var(--space-6); border: 1px solid var(--color-border-subtle); }
+    .scale-card h4 {
+      font-family: var(--font-mono); font-size: var(--text-overline); font-weight: 600;
+      letter-spacing: var(--tracking-overline); text-transform: uppercase;
+      color: var(--color-fg-muted); margin-bottom: var(--space-4);
+    }
+    .spacing-row { display: flex; align-items: center; gap: var(--space-4); padding-block: var(--space-1); }
+    .spacing-row code { font-family: var(--font-mono); font-size: 12px; color: var(--color-fg-subtle); width: 90px; }
+    .spacing-bar { height: 8px; background: var(--color-fg-default); border-radius: 1px; }
+    .radius-row { display: flex; align-items: center; gap: var(--space-4); padding-block: var(--space-2); }
+    .radius-row code { font-family: var(--font-mono); font-size: 12px; color: var(--color-fg-subtle); width: 80px; }
+    .radius-box { width: 48px; height: 48px; background: var(--color-fg-default); }
+
+    /* ─── 4. Components — Buttons ──────────────────────── */
+    .components {
+      display: grid;
+      gap: var(--space-12);
+    }
+    .demo {
+      background: var(--color-bg-subtle);
+      border: 1px solid var(--color-border-subtle);
+      border-radius: var(--radius-xs);
+      padding: var(--space-8);
+    }
+    .demo__head {
+      display: flex; align-items: baseline; justify-content: space-between; gap: var(--space-4);
+      margin-bottom: var(--space-6);
+      padding-bottom: var(--space-4);
+      border-bottom: 1px solid var(--color-border-default);
+    }
+    .demo__title {
+      font-family: var(--font-display);
+      font-size: 22px;
+      font-weight: 600;
+      letter-spacing: -0.005em;
+    }
+    .demo__name {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--color-fg-subtle);
+    }
+    .demo__row {
+      display: flex; flex-wrap: wrap; gap: var(--space-3); align-items: center;
+    }
+
+    /* Button */
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+      padding-inline: var(--btn-padding-x-md);
+      height: var(--btn-height-md);
+      border-radius: var(--btn-radius);
+      font-family: var(--font-body);
+      font-size: var(--btn-font-size);
+      font-weight: var(--btn-font-weight);
+      letter-spacing: -0.005em;
+      border: 1px solid transparent;
+      transition: background var(--motion-fast) var(--ease-out),
+                  border-color var(--motion-fast) var(--ease-out),
+                  color var(--motion-fast) var(--ease-out),
+                  transform var(--motion-fast) var(--ease-out),
+                  box-shadow var(--motion-fast) var(--ease-out);
+      white-space: nowrap;
+    }
+    .btn:active { transform: scale(0.98); }
+    .btn:focus-visible { box-shadow: var(--shadow-focus); outline: none; }
+    .btn--sm { height: var(--btn-height-sm); padding-inline: var(--btn-padding-x-sm); font-size: 13px; }
+    .btn--lg { height: var(--btn-height-lg); padding-inline: var(--btn-padding-x-lg); font-size: 15px; }
+
+    .btn--primary { background: var(--btn-primary-bg); color: var(--btn-primary-fg); }
+    .btn--primary:hover { background: var(--btn-primary-bg-hover); }
+
+    .btn--secondary { background: transparent; color: var(--btn-secondary-fg); border-color: var(--btn-secondary-border); }
+    .btn--secondary:hover { background: var(--btn-secondary-bg-hover); border-color: var(--color-border-strong); }
+
+    .btn--ghost { background: transparent; color: var(--color-fg-default); }
+    .btn--ghost:hover { background: var(--btn-ghost-bg-hover); }
+
+    .btn--accent { background: var(--btn-accent-bg); color: var(--btn-accent-fg); }
+    .btn--accent:hover { background: var(--btn-accent-bg-hover); }
+
+    .btn--destructive { background: var(--color-danger); color: white; }
+    .btn--destructive:hover { background: #9B4D43; }
+
+    .btn--icon { width: 40px; padding: 0; }
+
+    /* Slider */
+    .slider {
+      position: relative; height: 24px;
+      display: flex; align-items: center; cursor: pointer;
+      width: 100%;
+    }
+    .slider__track { position: absolute; inset: 50% 0 auto 0; height: var(--slider-track-h); background: var(--slider-track-bg); transform: translateY(-50%); }
+    .slider__progress { position: absolute; left: 0; top: 50%; height: var(--slider-track-h); background: var(--slider-progress-bg); transform: translateY(-50%); transition: width var(--motion-instant) var(--ease-out); }
+    .slider__thumb {
+      position: absolute; top: 50%;
+      width: var(--slider-thumb-size); height: var(--slider-thumb-size);
+      background: var(--slider-thumb-bg);
+      border: var(--slider-thumb-border);
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+      cursor: grab;
+      transition: transform var(--motion-fast) var(--ease-spring),
+                  border-color var(--motion-fast) var(--ease-out),
+                  box-shadow var(--motion-fast) var(--ease-out);
+    }
+    .slider__thumb:hover { transform: translate(-50%, -50%) scale(1.15); }
+    .slider:active .slider__thumb { transform: translate(-50%, -50%) scale(1.1); cursor: grabbing; }
+    .slider--active .slider__progress { background: var(--color-accent); }
+    .slider--active .slider__thumb { border-color: var(--color-accent); }
+    .slider-row {
+      display: grid; grid-template-columns: 100px 1fr 60px;
+      gap: var(--space-4); align-items: center;
+      padding-block: var(--space-3);
+    }
+    .slider-row__label { font-size: 14px; color: var(--color-fg-default); }
+    .slider-row__value {
+      font-family: var(--font-mono);
+      font-size: 13px; color: var(--color-fg-default);
+      font-variant-numeric: tabular-nums;
+      text-align: right;
+    }
+
+    /* Card */
+    .card {
+      background: var(--card-bg);
+      border: var(--card-border);
+      border-radius: var(--card-radius);
+      padding: var(--card-padding);
+      transition: border-color var(--motion-fast) var(--ease-out), box-shadow var(--motion-fast) var(--ease-out), transform var(--motion-fast) var(--ease-out);
+    }
+    .card:hover { border-color: var(--color-border-default); box-shadow: var(--card-shadow-hover); }
+    .card__title { font-family: var(--font-display); font-size: 22px; font-weight: 600; letter-spacing: -0.005em; margin-bottom: var(--space-2); }
+    .card__desc { font-size: 14px; color: var(--color-fg-muted); line-height: 1.6; }
+    .card__meta {
+      margin-top: var(--space-4);
+      padding-top: var(--space-3);
+      border-top: 1px solid var(--color-border-subtle);
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--color-fg-subtle);
+      display: flex; justify-content: space-between; gap: var(--space-3);
+    }
+
+    /* Input */
+    .input {
+      width: 100%;
+      height: var(--input-height);
+      padding-inline: var(--input-padding-x);
+      background: var(--input-bg);
+      border: 1px solid var(--input-border);
+      border-radius: var(--input-radius);
+      font-size: var(--input-font-size);
+      color: var(--input-fg);
+      transition: border-color var(--motion-fast) var(--ease-out), box-shadow var(--motion-fast) var(--ease-out);
+    }
+    .input:focus-visible { border-color: var(--input-border-focus); box-shadow: var(--shadow-focus); outline: none; }
+    .input::placeholder { color: var(--input-placeholder); }
+    .field { display: grid; gap: var(--space-2); }
+    .field__label {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--color-fg-default);
+      letter-spacing: -0.005em;
+    }
+    .field__hint {
+      font-size: 12px;
+      color: var(--color-fg-subtle);
+    }
+
+    /* Toggle */
+    .toggle {
+      position: relative;
+      width: var(--toggle-track-w);
+      height: var(--toggle-track-h);
+      border-radius: var(--radius-pill);
+      background: var(--toggle-track-bg-off);
+      transition: background var(--motion-base) var(--ease-out);
+      flex-shrink: 0;
+    }
+    .toggle::before {
+      content: '';
+      position: absolute;
+      top: 3px; left: 3px;
+      width: var(--toggle-thumb-size); height: var(--toggle-thumb-size);
+      background: var(--toggle-thumb-bg);
+      border-radius: 50%;
+      box-shadow: var(--shadow-xs);
+      transition: transform var(--motion-base) var(--ease-spring);
+    }
+    .toggle--on { background: var(--toggle-track-bg-on); }
+    .toggle--on::before { transform: translateX(calc(var(--toggle-track-w) - var(--toggle-thumb-size) - 6px)); }
+
+    .toggle-row {
+      display: flex; align-items: center; justify-content: space-between; gap: var(--space-4);
+      padding-block: var(--space-3);
+      border-bottom: 1px solid var(--color-border-subtle);
+    }
+    .toggle-row:last-child { border-bottom: 0; }
+    .toggle-row__label { font-size: 14px; }
+    .toggle-row__hint { font-size: 12px; color: var(--color-fg-subtle); margin-top: 2px; }
+
+    /* Toast */
+    .toast {
+      display: inline-flex; align-items: center; gap: var(--space-3);
+      background: var(--toast-bg);
+      color: var(--toast-fg);
+      border-radius: var(--toast-radius);
+      padding: var(--toast-padding);
+      box-shadow: var(--toast-shadow);
+      position: relative;
+      font-size: 14px;
+      max-width: 360px;
+      overflow: hidden;
+    }
+    .toast::before {
+      content: '';
+      position: absolute; left: 0; top: 0; bottom: 0;
+      width: var(--toast-accent-w);
+      background: var(--color-accent);
+    }
+    .toast--success::before { background: var(--color-success); }
+    .toast--warning::before { background: var(--color-warning); }
+    .toast--danger::before { background: var(--color-danger); }
+    .toast__title { font-weight: 600; }
+    .toast__body { color: color-mix(in srgb, var(--toast-fg) 75%, transparent); margin-top: 2px; font-size: 13px; }
+
+    /* Modal */
+    .modal-demo {
+      position: relative;
+      background: var(--color-bg-base);
+      border-radius: var(--modal-radius);
+      box-shadow: var(--shadow-lg);
+      padding: var(--space-8);
+      max-width: 480px;
+      width: 100%;
+      border: 1px solid var(--color-border-subtle);
+    }
+    .modal-demo__head { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--space-4); margin-bottom: var(--space-4); }
+    .modal-demo__title { font-family: var(--font-display); font-size: 24px; font-weight: 600; letter-spacing: -0.01em; }
+    .modal-demo__close {
+      width: 32px; height: 32px;
+      border-radius: var(--radius-pill);
+      display: inline-flex; align-items: center; justify-content: center;
+      transition: background var(--motion-fast) var(--ease-out);
+    }
+    .modal-demo__close:hover { background: var(--color-bg-subtle); }
+    .modal-demo__body { font-size: 14px; color: var(--color-fg-muted); line-height: 1.7; margin-bottom: var(--space-6); }
+    .modal-demo__actions { display: flex; gap: var(--space-2); justify-content: flex-end; }
+
+    /* Platform Ratio Tabs */
+    .ratio-tabs {
+      display: flex; gap: var(--space-2);
+      flex-wrap: wrap;
+    }
+    .ratio-tab {
+      display: flex; flex-direction: column; align-items: center; gap: var(--space-2);
+      padding: var(--space-3);
+      border-radius: var(--radius-xs);
+      border: 1px solid var(--color-border-default);
+      background: transparent;
+      transition: all var(--motion-fast) var(--ease-out);
+      min-width: 88px;
+    }
+    .ratio-tab:hover { border-color: var(--color-border-strong); }
+    .ratio-tab--active {
+      background: var(--color-fg-default);
+      color: var(--color-fg-inverse);
+      border-color: var(--color-fg-default);
+    }
+    .ratio-tab__shape {
+      background: currentColor;
+      opacity: 0.2;
+      border-radius: 1px;
+    }
+    .ratio-tab--active .ratio-tab__shape { opacity: 0.9; }
+    .ratio-tab__label {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+    }
+    .ratio-tab__platform {
+      font-size: 10px;
+      letter-spacing: 0.04em;
+      opacity: 0.7;
+    }
+
+    /* Preset Card (편집기 프리셋 그리드 미리보기) */
+    .preset-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+      gap: var(--space-3);
+    }
+    .preset-card {
+      cursor: pointer;
+      border: 1.5px solid transparent;
+      border-radius: var(--radius-xs);
+      overflow: hidden;
+      transition: transform var(--motion-fast) var(--ease-out),
+                  box-shadow var(--motion-fast) var(--ease-out),
+                  border-color var(--motion-fast) var(--ease-out);
+      position: relative;
+      background: var(--color-bg-base);
+    }
+    .preset-card:hover { transform: scale(1.02); box-shadow: var(--shadow-sm); }
+    .preset-card--active { border-color: var(--color-accent); border-width: 2px; }
+    .preset-card__thumb {
+      aspect-ratio: 4 / 5;
+      background: linear-gradient(135deg, var(--color-bg-muted), var(--cream-300));
+      position: relative;
+    }
+    .preset-card__overlay {
+      position: absolute;
+      inset: 0;
+      mix-blend-mode: multiply;
+      opacity: 0.7;
+    }
+    .preset-card__meta {
+      padding: var(--space-2) var(--space-3);
+      background: var(--color-bg-base);
+    }
+    .preset-card__code {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      color: var(--color-fg-subtle);
+    }
+    .preset-card__name {
+      font-family: var(--font-display);
+      font-size: 13px;
+      font-weight: 500;
+      letter-spacing: -0.005em;
+      color: var(--color-fg-default);
+      margin-top: 2px;
+    }
+
+    /* ─── Editor Canvas Mock ─────────────────────────────── */
+    .editor-mock {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1px;
+      background: var(--color-border-subtle);
+      border: 1px solid var(--color-border-subtle);
+      border-radius: var(--radius-xs);
+      overflow: hidden;
+      min-height: 480px;
+    }
+    @media (min-width: 1024px) {
+      .editor-mock { grid-template-columns: 240px 1fr 280px; }
+    }
+    .editor-mock__col { background: var(--color-bg-base); padding: var(--space-5); }
+    .editor-mock__col h5 {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--color-fg-subtle);
+      margin-bottom: var(--space-4);
+    }
+    .editor-mock__canvas {
+      background: var(--canvas-bg);
+      background-image: var(--canvas-checkerboard);
+      background-size: var(--canvas-checker-size) var(--canvas-checker-size);
+      background-position: 0 0, 0 8px, 8px -8px, -8px 0px;
+      display: flex; align-items: center; justify-content: center;
+      padding: var(--space-8);
+      min-height: 400px;
+    }
+    .editor-mock__photo {
+      aspect-ratio: 4/5;
+      width: 100%; max-width: 320px;
+      background: linear-gradient(180deg, #c4845a 0%, #6b4a3a 50%, #2a1a14 100%);
+      box-shadow: var(--shadow-lg);
+      position: relative;
+    }
+    .editor-mock__photo::before {
+      content: '';
+      position: absolute; inset: 0;
+      background-image:
+        radial-gradient(at 30% 20%, rgba(255, 200, 150, 0.3), transparent 50%),
+        radial-gradient(at 70% 60%, rgba(100, 50, 30, 0.4), transparent 50%);
+    }
+    .tool-list { display: flex; flex-direction: column; gap: var(--space-1); }
+    .tool-list__item {
+      display: flex; align-items: center; gap: var(--space-3);
+      padding: var(--space-2) var(--space-3);
+      border-radius: var(--radius-xs);
+      cursor: pointer;
+      transition: background var(--motion-fast) var(--ease-out);
+      font-size: 13px;
+    }
+    .tool-list__item:hover { background: var(--color-bg-subtle); }
+    .tool-list__item--active { background: var(--color-bg-muted); color: var(--color-fg-default); font-weight: 500; }
+    .tool-list__item svg { width: 16px; height: 16px; stroke-width: 1.5; }
+
+    /* ─── Footer ─────────────────────────────────────────── */
+    .footer {
+      padding-block: var(--space-12);
+      border-top: 1px solid var(--color-border-subtle);
+      text-align: center;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--color-fg-subtle);
+    }
+    .footer__separator { display: inline-block; margin: 0 var(--space-3); color: var(--color-border-default); }
+
+    /* ─── Utility ────────────────────────────────────────── */
+    .u-stack > * + * { margin-top: var(--space-4); }
+    .u-row { display: flex; gap: var(--space-3); flex-wrap: wrap; align-items: center; }
+    .badge {
+      display: inline-flex; align-items: center; gap: var(--space-1);
+      padding: 3px var(--space-2);
+      border-radius: var(--radius-pill);
+      font-family: var(--font-mono);
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      border: 1px solid currentColor;
+    }
+    .badge--pro { color: var(--color-pro); }
+    .badge--pro-plus { color: var(--color-pro-plus); }
+    .badge--natural { color: var(--color-natural); }
+    .badge--accent { color: var(--color-accent); }
+  </style>
+</head>
+<body>
+
+  <!-- ─── Grain Overlay ────────────────────────────────── -->
+  <svg class="grain" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
+    <filter id="noise">
+      <feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="2" stitchTiles="stitch" />
+      <feColorMatrix values="0 0 0 0 0   0 0 0 0 0   0 0 0 0 0   0 0 0 0.5 0" />
+    </filter>
+    <rect width="100%" height="100%" filter="url(#noise)" />
+  </svg>
+
+  <!-- ─── Top Bar ──────────────────────────────────────── -->
+  <header class="topbar">
+    <div class="container topbar__inner">
+      <div class="brand">
+        <span>photo<em style="font-style: italic; color: var(--color-accent);">·</em>magic</span>
+        <span class="brand__sub">DS · v1.0</span>
+      </div>
+      <div class="topbar__actions">
+        <button class="btn btn--ghost btn--sm">문서</button>
+        <button class="btn btn--ghost btn--sm">Tokens</button>
+        <button class="theme-toggle" aria-label="테마 전환" id="themeToggle">
+          <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="4"/>
+            <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/>
+          </svg>
+          <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ─── Hero ─────────────────────────────────────────── -->
+  <section class="hero">
+    <div class="container">
+      <div class="hero__overline">Editorial Film Studio · 디자인 시스템</div>
+      <h1 class="hero__title">
+        지금의 나를,<br>
+        <em>예쁘게.</em>
+      </h1>
+      <p class="hero__sub" lang="ko">
+        photo-magic의 모든 픽셀은 <em style="font-style: italic; color: var(--color-fg-default);">잡지 편집실의 따뜻함</em>에서 시작합니다.
+        무보정 같은 보정, 필름 감성, 절제된 액센트.
+        16GB 머신부터 4K 데스크탑까지 — 모든 스크린에서 동일한 캐릭터.
+      </p>
+      <div class="hero__meta">
+        <span>Color · 11 Scales</span>
+        <span>Type · 11 Sizes</span>
+        <span>Components · 8</span>
+        <span>Light + Dark</span>
+        <span>WCAG AAA</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── 1. Color ─────────────────────────────────────── -->
+  <section class="section">
+    <div class="container">
+      <div class="section__head">
+        <div class="section__num">01 · Color</div>
+        <h2 class="section__title">잉크와 종이, 그리고 흙빛 액센트.</h2>
+        <p class="section__desc">
+          순백 대신 따뜻한 크림, 순흑 대신 깊은 차콜.
+          액센트는 한 번에 하나만 — 러스트(주 행동), 모스(자연), 앰버(Pro), 플럼(Pro+).
+        </p>
+      </div>
+
+      <div class="palette">
+        <div class="palette__group">
+          <h3>Cream — Light Base</h3>
+          <div class="swatches">
+            <div class="swatch"><div class="swatch__color" style="background:#FAF7F2"></div><div class="swatch__meta"><div class="swatch__name">Cream 50</div><div class="swatch__hex">#FAF7F2</div></div></div>
+            <div class="swatch"><div class="swatch__color" style="background:#F4EFE7"></div><div class="swatch__meta"><div class="swatch__name">Cream 100</div><div class="swatch__hex">#F4EFE7</div></div></div>
+            <div class="swatch"><div class="swatch__color" style="background:#E8DFD0"></div><div class="swatch__meta"><div class="swatch__name">Cream 200</div><div class="swatch__hex">#E8DFD0</div></div></div>
+            <div class="swatch"><div class="swatch__color" style="background:#D4C7B4"></div><div class="swatch__meta"><div class="swatch__name">Cream 300</div><div class="swatch__hex">#D4C7B4</div></div></div>
+            <div class="swatch"><div class="swatch__color" style="background:#B5A48D"></div><div class="swatch__meta"><div class="swatch__name">Cream 400</div><div class="swatch__hex">#B5A48D</div></div></div>
+            <div class="swatch"><div class="swatch__color" style="background:#8B7A63"></div><div class="swatch__meta"><div class="swatch__name">Cream 500</div><div class="swatch__hex">#8B7A63</div></div></div>
+            <div class="swatch"><div class="swatch__color" style="background:#5F5240"></div><div class="swatch__meta"><div class="swatch__name">Cream 600</div><div class="swatch__hex">#5F5240</div></div></div>
+            <div class="swatch"><div class="swatch__color" style="background:#3D3528"></div><div class="swatch__meta"><div class="swatch__name">Cream 700</div><div class="swatch__hex">#3D3528</div></div></div>
+            <div class="swatch"><div class="swatch__color" style="background:#211C15"></div><div class="swatch__meta"><div class="swatch__name">Cream 800</div><div class="swatch__hex">#211C15</div></div></div>
+            <div class="swatch"><div class="swatch__color" style="background:#0E0C09"></div><div class="swatch__meta"><div class="swatch__name">Cream 900</div><div class="swatch__hex">#0E0C09</div></div></div>
+          </div>
+        </div>
+
+        <div class="palette__group">
+          <h3>Charcoal — Dark Base</h3>
+          <div class="swatches">
+            <div class="swatch"><div class="swatch__color" style="background:#2A2520"></div><div class="swatch__meta"><div class="swatch__name">Charcoal 50</div><div class="swatch__hex">#2A2520</div></div></div>
+            <div class="swatch"><div class="swatch__color" style="background:#1F1B16"></div><div class="swatch__meta"><div class="swatch__name">Charcoal 100</div><div class="swatch__hex">#1F1B16</div></div></div>
+            <div class="swatch"><div class="swatch__color" style="background:#1A1612"></div><div class="swatch__meta"><div class="swatch__name">Charcoal 200</div><div class="swatch__hex">#1A1612</div></div></div>
+            <div class="swatch"><div class="swatch__color" style="background:#15120E"></div><div class="swatch__meta"><div class="swatch__name">Charcoal 300</div><div class="swatch__hex">#15120E</div></div></div>
+            <div class="swatch"><div class="swatch__color" style="background:#100D0A"></div><div class="swatch__meta"><div class="swatch__name">Charcoal 400</div><div class="swatch__hex">#100D0A</div></div></div>
+          </div>
+        </div>
+
+        <div class="palette__group">
+          <h3>Accents · 의미적 컬러</h3>
+          <div class="swatches">
+            <div class="swatch"><div class="swatch__color" style="background:#E5946D"></div><div class="swatch__meta"><div class="swatch__name">Rust 300</div><div class="swatch__hex">#E5946D</div></div></div>
+            <div class="swatch"><div class="swatch__color" style="background:#C4633A"></div><div class="swatch__meta"><div class="swatch__name">Rust 500</div><div class="swatch__hex">#C4633A</div></div></div>
+            <div class="swatch"><div class="swatch__color" style="background:#8E4424"></div><div class="swatch__meta"><div class="swatch__name">Rust 700</div><div class="swatch__hex">#8E4424</div></div></div>
+            <div class="swatch"><div class="swatch__color" style="background:#B5C29A"></div><div class="swatch__meta"><div class="swatch__name">Moss 300</div><div class="swatch__hex">#B5C29A</div></div></div>
+            <div class="swatch"><div class="swatch__color" style="background:#6B7A45"></div><div class="swatch__meta"><div class="swatch__name">Moss 500</div><div class="swatch__hex">#6B7A45</div></div></div>
+            <div class="swatch"><div class="swatch__color" style="background:#3F4827"></div><div class="swatch__meta"><div class="swatch__name">Moss 700</div><div class="swatch__hex">#3F4827</div></div></div>
+            <div class="swatch"><div class="swatch__color" style="background:#E8C9A1"></div><div class="swatch__meta"><div class="swatch__name">Amber 300</div><div class="swatch__hex">#E8C9A1</div></div></div>
+            <div class="swatch"><div class="swatch__color" style="background:#D4A574"></div><div class="swatch__meta"><div class="swatch__name">Amber 500</div><div class="swatch__hex">#D4A574</div></div></div>
+            <div class="swatch"><div class="swatch__color" style="background:#9B7340"></div><div class="swatch__meta"><div class="swatch__name">Amber 700</div><div class="swatch__hex">#9B7340</div></div></div>
+            <div class="swatch"><div class="swatch__color" style="background:#A589A0"></div><div class="swatch__meta"><div class="swatch__name">Plum 300</div><div class="swatch__hex">#A589A0</div></div></div>
+            <div class="swatch"><div class="swatch__color" style="background:#6B4A5F"></div><div class="swatch__meta"><div class="swatch__name">Plum 500</div><div class="swatch__hex">#6B4A5F</div></div></div>
+            <div class="swatch"><div class="swatch__color" style="background:#3F2A38"></div><div class="swatch__meta"><div class="swatch__name">Plum 700</div><div class="swatch__hex">#3F2A38</div></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── 2. Typography ────────────────────────────────── -->
+  <section class="section">
+    <div class="container">
+      <div class="section__head">
+        <div class="section__num">02 · Typography</div>
+        <h2 class="section__title">Fraunces × Pretendard × Lora.</h2>
+        <p class="section__desc">
+          잡지 편집실의 권위를 가진 <em style="font-style: italic;">Fraunces</em>로 헤딩을 잡고,
+          한국 Z세대의 <em style="font-style: italic;">Pretendard</em>로 본문을 흘립니다.
+          <em style="font-style: italic;">Lora</em>는 영문 본문, <em style="font-style: italic;">JetBrains Mono</em>는 UI 디테일.
+        </p>
+      </div>
+
+      <div class="type-spec">
+        <div class="type-row">
+          <div class="type-row__meta">Display 3<br>Fraunces · 88/92</div>
+          <div class="type-row__sample display-3">지금의 <em>나를</em></div>
+          <div class="type-row__values">opsz 144 · -0.04em</div>
+        </div>
+        <div class="type-row">
+          <div class="type-row__meta">Display 1<br>Fraunces · 48/56</div>
+          <div class="type-row__sample display-1">필름 감성, <em>웹에서.</em></div>
+          <div class="type-row__values">opsz 72 · -0.02em</div>
+        </div>
+        <div class="type-row">
+          <div class="type-row__meta">Heading 1<br>Fraunces · 36/44</div>
+          <div class="type-row__sample heading-1">사용자에게 닿는 모든 화면.</div>
+          <div class="type-row__values">opsz 36 · -0.015em</div>
+        </div>
+        <div class="type-row">
+          <div class="type-row__meta">Heading 2<br>Fraunces · 28/36</div>
+          <div class="type-row__sample heading-2">Editorial Film Studio</div>
+          <div class="type-row__values">-0.01em</div>
+        </div>
+        <div class="type-row">
+          <div class="type-row__meta">Heading 3<br>Fraunces · 22/32</div>
+          <div class="type-row__sample heading-3">Threads에 한 번에 올리기</div>
+          <div class="type-row__values">-0.005em</div>
+        </div>
+        <div class="type-row">
+          <div class="type-row__meta">Body Lg<br>Pretendard · 18/28</div>
+          <div class="type-row__sample body-lg" lang="ko">
+            한글 본문은 Pretendard. 자간 -0.01em, 줄간격 1.6.
+            카페 사진처럼 오후의 햇살이 부드럽게 떨어집니다.
+          </div>
+          <div class="type-row__values">word-break: keep-all</div>
+        </div>
+        <div class="type-row">
+          <div class="type-row__meta">Body<br>Pretendard · 16/24</div>
+          <div class="type-row__sample body-norm" lang="ko">
+            UI 본문 16px이 표준. 14px 이하는 한글 자소 식별 한계로 금지.
+            iOS 입력 자동 줌 방지를 위해 폼 입력은 16px 강제.
+          </div>
+          <div class="type-row__values">tnum · lnum</div>
+        </div>
+        <div class="type-row">
+          <div class="type-row__meta">Body En<br>Lora · 16/24</div>
+          <div class="type-row__sample body-norm" style="font-family: var(--font-body-en);" lang="en">
+            Lora pairs with Fraunces beautifully — both serif, distinct weight feel.
+            Numbers like 4,900원 align tabularly.
+          </div>
+          <div class="type-row__values">italic available</div>
+        </div>
+        <div class="type-row">
+          <div class="type-row__meta">Body Sm<br>Pretendard · 14/20</div>
+          <div class="type-row__sample body-sm" lang="ko">
+            보조 텍스트 · 메타 정보 · 폼 힌트.
+          </div>
+          <div class="type-row__values">0.005em</div>
+        </div>
+        <div class="type-row">
+          <div class="type-row__meta">Caption<br>Pretendard · 12/16</div>
+          <div class="type-row__sample caption" lang="ko">
+            슬라이더 값 · 진행률 · 단축키 안내.
+          </div>
+          <div class="type-row__values">0.01em · medium</div>
+        </div>
+        <div class="type-row">
+          <div class="type-row__meta">Overline<br>JetBrains Mono · 11/16</div>
+          <div class="type-row__sample overline">FILM 01 · 늦봄 오후</div>
+          <div class="type-row__values">0.08em · uppercase</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── 3. Spacing & Radius ──────────────────────────── -->
+  <section class="section">
+    <div class="container">
+      <div class="section__head">
+        <div class="section__num">03 · Spacing & Geometry</div>
+        <h2 class="section__title">4px 그리드 위에서 호흡하기.</h2>
+        <p class="section__desc">
+          모든 간격은 4px 베이스 모듈러 스케일.
+          radius는 의도적 절제 — 0/2/4/8/12/9999만 허용.
+          *둥근 SaaS*가 되지 않도록.
+        </p>
+      </div>
+
+      <div class="scales">
+        <div class="scale-card">
+          <h4>Spacing Scale</h4>
+          <div class="spacing-row"><code>space-1</code><div class="spacing-bar" style="width:4px"></div></div>
+          <div class="spacing-row"><code>space-2</code><div class="spacing-bar" style="width:8px"></div></div>
+          <div class="spacing-row"><code>space-3</code><div class="spacing-bar" style="width:12px"></div></div>
+          <div class="spacing-row"><code>space-4</code><div class="spacing-bar" style="width:16px"></div></div>
+          <div class="spacing-row"><code>space-6</code><div class="spacing-bar" style="width:24px"></div></div>
+          <div class="spacing-row"><code>space-8</code><div class="spacing-bar" style="width:32px"></div></div>
+          <div class="spacing-row"><code>space-12</code><div class="spacing-bar" style="width:48px"></div></div>
+          <div class="spacing-row"><code>space-16</code><div class="spacing-bar" style="width:64px"></div></div>
+          <div class="spacing-row"><code>space-24</code><div class="spacing-bar" style="width:96px"></div></div>
+        </div>
+
+        <div class="scale-card">
+          <h4>Border Radius</h4>
+          <div class="radius-row"><code>radius-none</code><div class="radius-box" style="border-radius:0"></div></div>
+          <div class="radius-row"><code>radius-xs</code><div class="radius-box" style="border-radius:2px"></div></div>
+          <div class="radius-row"><code>radius-sm</code><div class="radius-box" style="border-radius:4px"></div></div>
+          <div class="radius-row"><code>radius-md</code><div class="radius-box" style="border-radius:8px"></div></div>
+          <div class="radius-row"><code>radius-lg</code><div class="radius-box" style="border-radius:12px"></div></div>
+          <div class="radius-row"><code>radius-pill</code><div class="radius-box" style="border-radius:9999px"></div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── 4. Components ────────────────────────────────── -->
+  <section class="section">
+    <div class="container">
+      <div class="section__head">
+        <div class="section__num">04 · Components</div>
+        <h2 class="section__title">8 컴포넌트, 살아있는 데모.</h2>
+        <p class="section__desc">
+          버튼·슬라이더·카드·입력·토글·모달·토스트·비율 프리셋.
+          모든 컴포넌트가 실제 동작하며, 다크 모드 토글하면 즉시 적응합니다.
+        </p>
+      </div>
+
+      <div class="components">
+
+        <!-- Buttons -->
+        <div class="demo">
+          <div class="demo__head">
+            <h3 class="demo__title">Buttons</h3>
+            <span class="demo__name">Button · 5 variants × 3 sizes</span>
+          </div>
+          <div class="u-stack">
+            <div class="demo__row">
+              <button class="btn btn--primary">사진 불러오기</button>
+              <button class="btn btn--secondary">불러오기</button>
+              <button class="btn btn--ghost">취소</button>
+              <button class="btn btn--accent">원클릭 보정</button>
+              <button class="btn btn--destructive">삭제</button>
+            </div>
+            <div class="demo__row">
+              <button class="btn btn--primary btn--sm">작게</button>
+              <button class="btn btn--primary">기본</button>
+              <button class="btn btn--primary btn--lg">크게</button>
+              <button class="btn btn--secondary btn--icon" aria-label="Settings">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="width:18px;height:18px;">
+                  <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+                  <circle cx="12" cy="12" r="3"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sliders -->
+        <div class="demo">
+          <div class="demo__head">
+            <h3 class="demo__title">Sliders <span class="badge badge--natural">자연스러움 50%</span></h3>
+            <span class="demo__name">Slider · 1px track / 16px thumb</span>
+          </div>
+          <div class="u-stack">
+            <div class="slider-row">
+              <span class="slider-row__label">밝기</span>
+              <div class="slider slider--active" data-value="0.65">
+                <div class="slider__track"></div>
+                <div class="slider__progress" style="width: 65%"></div>
+                <div class="slider__thumb" style="left: 65%"></div>
+              </div>
+              <span class="slider-row__value">+15</span>
+            </div>
+            <div class="slider-row">
+              <span class="slider-row__label">대비</span>
+              <div class="slider" data-value="0.5">
+                <div class="slider__track"></div>
+                <div class="slider__progress" style="width: 50%"></div>
+                <div class="slider__thumb" style="left: 50%"></div>
+              </div>
+              <span class="slider-row__value">0</span>
+            </div>
+            <div class="slider-row">
+              <span class="slider-row__label">온도</span>
+              <div class="slider slider--active" data-value="0.42">
+                <div class="slider__track"></div>
+                <div class="slider__progress" style="width: 42%"></div>
+                <div class="slider__thumb" style="left: 42%"></div>
+              </div>
+              <span class="slider-row__value">−8</span>
+            </div>
+            <div class="slider-row">
+              <span class="slider-row__label">스킨 스무딩</span>
+              <div class="slider slider--active" data-value="0.35">
+                <div class="slider__track"></div>
+                <div class="slider__progress" style="width: 35%"></div>
+                <div class="slider__thumb" style="left: 35%"></div>
+              </div>
+              <span class="slider-row__value">35 / 70</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Cards -->
+        <div class="demo">
+          <div class="demo__head">
+            <h3 class="demo__title">Cards</h3>
+            <span class="demo__name">Card · 1px hairline border</span>
+          </div>
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: var(--space-3);">
+            <div class="card">
+              <div style="display: flex; align-items: center; gap: var(--space-2); margin-bottom: var(--space-3);">
+                <span class="badge badge--accent">Free</span>
+              </div>
+              <h4 class="card__title">기본 편집</h4>
+              <p class="card__desc">크롭, 회전, 색 보정, 20개 필름 프리셋. 워터마크 없는 무료 내보내기.</p>
+              <div class="card__meta"><span>월 0원</span><span>모든 기능</span></div>
+            </div>
+            <div class="card">
+              <div style="display: flex; align-items: center; gap: var(--space-2); margin-bottom: var(--space-3);">
+                <span class="badge badge--pro">Pro</span>
+              </div>
+              <h4 class="card__title">AI 보정 & SNS</h4>
+              <p class="card__desc">AI 지우개, 배경 제거 200회/월. Threads · Instagram 직접 업로드.</p>
+              <div class="card__meta"><span>월 4,900원</span><span>연 39,000원</span></div>
+            </div>
+            <div class="card">
+              <div style="display: flex; align-items: center; gap: var(--space-2); margin-bottom: var(--space-3);">
+                <span class="badge badge--pro-plus">Pro+</span>
+              </div>
+              <h4 class="card__title">프로페셔널</h4>
+              <p class="card__desc">AI 무제한, 4K 업스케일, 인플루언서 콜라보 프리셋, 우선 GPU 큐.</p>
+              <div class="card__meta"><span>월 9,900원</span><span>연 79,000원</span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Inputs -->
+        <div class="demo">
+          <div class="demo__head">
+            <h3 class="demo__title">Inputs</h3>
+            <span class="demo__name">Input · 16px (iOS zoom 방지)</span>
+          </div>
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: var(--space-4); max-width: 640px;">
+            <div class="field">
+              <label class="field__label">이메일</label>
+              <input class="input" type="email" placeholder="you@example.com" />
+              <span class="field__hint">로그인에 사용됩니다.</span>
+            </div>
+            <div class="field">
+              <label class="field__label">생년월일 <span style="color: var(--color-accent);">*</span></label>
+              <input class="input" type="text" placeholder="YYYY-MM-DD" value="2003-04-12" />
+              <span class="field__hint">14세 미만은 법정대리인 동의가 필요해요.</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Toggles -->
+        <div class="demo">
+          <div class="demo__head">
+            <h3 class="demo__title">Toggles</h3>
+            <span class="demo__name">Switch · 36×20 track</span>
+          </div>
+          <div style="max-width: 480px;">
+            <div class="toggle-row">
+              <div>
+                <div class="toggle-row__label">자연스러움 모드</div>
+                <div class="toggle-row__hint">뷰티 강도 최대 50%로 제한</div>
+              </div>
+              <button class="toggle toggle--on" data-toggle aria-pressed="true"></button>
+            </div>
+            <div class="toggle-row">
+              <div>
+                <div class="toggle-row__label">AI 편집 워터마크 표시</div>
+                <div class="toggle-row__hint">한국 AI기본법 권고 — Pro+만 끄기 가능</div>
+              </div>
+              <button class="toggle toggle--on" data-toggle aria-pressed="true"></button>
+            </div>
+            <div class="toggle-row">
+              <div>
+                <div class="toggle-row__label">자동 저장 (IndexedDB)</div>
+                <div class="toggle-row__hint">탭 닫아도 작업 복구</div>
+              </div>
+              <button class="toggle toggle--on" data-toggle aria-pressed="true"></button>
+            </div>
+            <div class="toggle-row">
+              <div>
+                <div class="toggle-row__label">프리뷰 60fps 강제</div>
+                <div class="toggle-row__hint">고사양 디바이스 전용</div>
+              </div>
+              <button class="toggle" data-toggle aria-pressed="false"></button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Toasts -->
+        <div class="demo">
+          <div class="demo__head">
+            <h3 class="demo__title">Toasts</h3>
+            <span class="demo__name">Toast · 4px accent bar</span>
+          </div>
+          <div style="display: grid; gap: var(--space-3);">
+            <div class="toast toast--success">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:18px;height:18px;flex-shrink:0;"><polyline points="20 6 9 17 4 12"/></svg>
+              <div>
+                <div class="toast__title">Threads에 게시 완료</div>
+                <div class="toast__body">post.ly/p/k3M2x · 2초 전</div>
+              </div>
+            </div>
+            <div class="toast">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:18px;height:18px;flex-shrink:0;"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+              <div>
+                <div class="toast__title">AI 얼굴 복원 진행 중</div>
+                <div class="toast__body">예상 432ms · GPU T4</div>
+              </div>
+            </div>
+            <div class="toast toast--warning">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:18px;height:18px;flex-shrink:0;"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+              <div>
+                <div class="toast__title">월간 AI 쿼터 80% 사용</div>
+                <div class="toast__body">남은 횟수 · 40 / 200 — Pro+ 업그레이드</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Modal -->
+        <div class="demo">
+          <div class="demo__head">
+            <h3 class="demo__title">Modal</h3>
+            <span class="demo__name">Modal · max-w-info 480px</span>
+          </div>
+          <div style="display:flex; justify-content:center; padding: var(--space-6); background: var(--canvas-bg); background-image: var(--canvas-checkerboard); background-size: var(--canvas-checker-size) var(--canvas-checker-size); border-radius: var(--radius-xs);">
+            <div class="modal-demo">
+              <div class="modal-demo__head">
+                <h3 class="modal-demo__title">민감정보 처리 동의</h3>
+                <button class="modal-demo__close" aria-label="닫기">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="width:18px;height:18px;"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                </button>
+              </div>
+              <p class="modal-demo__body" lang="ko">
+                뷰티 필터를 사용하려면 얼굴 랜드마크 처리가 필요해요.
+                <strong style="color: var(--color-fg-default);">랜드마크는 브라우저 안에서만 처리되고 서버로 전송되지 않습니다.</strong>
+                자세한 내용은 개인정보처리방침을 확인하세요.
+              </p>
+              <div class="modal-demo__actions">
+                <button class="btn btn--ghost">건너뛰기</button>
+                <button class="btn btn--primary">동의하고 시작</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Platform Ratio Tabs -->
+        <div class="demo">
+          <div class="demo__head">
+            <h3 class="demo__title">Platform Ratio Tabs</h3>
+            <span class="demo__name">Ratio · 5 presets</span>
+          </div>
+          <div class="ratio-tabs">
+            <button class="ratio-tab"><div class="ratio-tab__shape" style="width: 24px; height: 30px;"></div><div class="ratio-tab__label">4 : 5</div><div class="ratio-tab__platform">Instagram</div></button>
+            <button class="ratio-tab ratio-tab--active"><div class="ratio-tab__shape" style="width: 18px; height: 32px;"></div><div class="ratio-tab__label">9 : 16</div><div class="ratio-tab__platform">Stories</div></button>
+            <button class="ratio-tab"><div class="ratio-tab__shape" style="width: 28px; height: 28px;"></div><div class="ratio-tab__label">1 : 1</div><div class="ratio-tab__platform">Threads</div></button>
+            <button class="ratio-tab"><div class="ratio-tab__shape" style="width: 36px; height: 20px;"></div><div class="ratio-tab__label">16 : 9</div><div class="ratio-tab__platform">X</div></button>
+            <button class="ratio-tab"><div class="ratio-tab__shape" style="width: 24px; height: 32px;"></div><div class="ratio-tab__label">3 : 4</div><div class="ratio-tab__platform">Print</div></button>
+          </div>
+        </div>
+
+        <!-- Preset Grid -->
+        <div class="demo">
+          <div class="demo__head">
+            <h3 class="demo__title">Film Preset Grid</h3>
+            <span class="demo__name">Preset Card · 4:5 thumb</span>
+          </div>
+          <div class="preset-grid">
+            <div class="preset-card preset-card--active">
+              <div class="preset-card__thumb">
+                <div class="preset-card__overlay" style="background: linear-gradient(180deg, rgba(212, 165, 116, 0.6), rgba(143, 90, 65, 0.4));"></div>
+              </div>
+              <div class="preset-card__meta"><div class="preset-card__code">FILM 01</div><div class="preset-card__name">늦봄 오후</div></div>
+            </div>
+            <div class="preset-card">
+              <div class="preset-card__thumb">
+                <div class="preset-card__overlay" style="background: linear-gradient(180deg, rgba(181, 194, 154, 0.5), rgba(63, 72, 39, 0.3));"></div>
+              </div>
+              <div class="preset-card__meta"><div class="preset-card__code">FILM 02</div><div class="preset-card__name">한낮의 카페</div></div>
+            </div>
+            <div class="preset-card">
+              <div class="preset-card__thumb">
+                <div class="preset-card__overlay" style="background: linear-gradient(180deg, rgba(165, 137, 160, 0.5), rgba(63, 42, 56, 0.4));"></div>
+              </div>
+              <div class="preset-card__meta"><div class="preset-card__code">FILM 03</div><div class="preset-card__name">저녁의 푸른빛</div></div>
+            </div>
+            <div class="preset-card">
+              <div class="preset-card__thumb">
+                <div class="preset-card__overlay" style="background: linear-gradient(180deg, rgba(229, 148, 109, 0.55), rgba(142, 68, 36, 0.4));"></div>
+              </div>
+              <div class="preset-card__meta"><div class="preset-card__code">FILM 04</div><div class="preset-card__name">필름 그레인</div></div>
+            </div>
+            <div class="preset-card">
+              <div class="preset-card__thumb">
+                <div class="preset-card__overlay" style="background: linear-gradient(180deg, rgba(180, 180, 180, 0.5), rgba(60, 60, 60, 0.5));"></div>
+              </div>
+              <div class="preset-card__meta"><div class="preset-card__code">FILM 05</div><div class="preset-card__name">흑백 잡지</div></div>
+            </div>
+            <div class="preset-card">
+              <div class="preset-card__thumb">
+                <div class="preset-card__overlay" style="background: linear-gradient(180deg, rgba(232, 201, 161, 0.5), rgba(155, 115, 64, 0.4));"></div>
+              </div>
+              <div class="preset-card__meta"><div class="preset-card__code">FILM 06</div><div class="preset-card__name">한국의 가을</div></div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── 5. Editor Mock ───────────────────────────────── -->
+  <section class="section">
+    <div class="container">
+      <div class="section__head">
+        <div class="section__num">05 · Editor in Context</div>
+        <h2 class="section__title">실제 편집 화면에 적용된 토큰.</h2>
+        <p class="section__desc">
+          모든 디자인 토큰이 결합된 결과 — 좌 사이드바(도구) · 캔버스(작업 영역) · 우 사이드바(속성).
+          데스크탑 1024px 이상에서 3컬럼, 모바일은 단일 + 하단 툴바.
+        </p>
+      </div>
+
+      <div class="editor-mock">
+        <div class="editor-mock__col">
+          <h5>Tools</h5>
+          <div class="tool-list">
+            <div class="tool-list__item tool-list__item--active">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M6.13 1L6 16a2 2 0 0 0 2 2h15"/><path d="M1 6.13L16 6a2 2 0 0 1 2 2v15"/></svg>
+              크롭
+            </div>
+            <div class="tool-list__item">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg>
+              회전
+            </div>
+            <div class="tool-list__item">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33"/></svg>
+              조정
+            </div>
+            <div class="tool-list__item">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/></svg>
+              필터
+            </div>
+            <div class="tool-list__item">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>
+              뷰티
+            </div>
+            <div class="tool-list__item">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4l6 6L8 22 2 22l0-6z"/></svg>
+              AI 지우개
+            </div>
+            <div class="tool-list__item">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><polygon points="4 7 4 4 20 4 20 7"/><line x1="9" y1="20" x2="15" y2="20"/><line x1="12" y1="4" x2="12" y2="20"/></svg>
+              텍스트
+            </div>
+            <div class="tool-list__item">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+              스티커
+            </div>
+          </div>
+        </div>
+
+        <div class="editor-mock__canvas">
+          <div class="editor-mock__photo"></div>
+        </div>
+
+        <div class="editor-mock__col">
+          <h5>Adjust · 조정</h5>
+          <div class="u-stack">
+            <div>
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: var(--space-1);">
+                <span class="caption" style="color: var(--color-fg-muted);">밝기</span>
+                <span class="overline" style="color: var(--color-fg-default);">+12</span>
+              </div>
+              <div class="slider slider--active">
+                <div class="slider__track"></div>
+                <div class="slider__progress" style="width: 62%"></div>
+                <div class="slider__thumb" style="left: 62%"></div>
+              </div>
+            </div>
+            <div>
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: var(--space-1);">
+                <span class="caption" style="color: var(--color-fg-muted);">대비</span>
+                <span class="overline" style="color: var(--color-fg-default);">+8</span>
+              </div>
+              <div class="slider slider--active">
+                <div class="slider__track"></div>
+                <div class="slider__progress" style="width: 58%"></div>
+                <div class="slider__thumb" style="left: 58%"></div>
+              </div>
+            </div>
+            <div>
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: var(--space-1);">
+                <span class="caption" style="color: var(--color-fg-muted);">채도</span>
+                <span class="overline" style="color: var(--color-fg-default);">−15</span>
+              </div>
+              <div class="slider slider--active">
+                <div class="slider__track"></div>
+                <div class="slider__progress" style="width: 35%"></div>
+                <div class="slider__thumb" style="left: 35%"></div>
+              </div>
+            </div>
+            <div>
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: var(--space-1);">
+                <span class="caption" style="color: var(--color-fg-muted);">온도</span>
+                <span class="overline" style="color: var(--color-fg-default);">+5</span>
+              </div>
+              <div class="slider">
+                <div class="slider__track"></div>
+                <div class="slider__progress" style="width: 55%"></div>
+                <div class="slider__thumb" style="left: 55%"></div>
+              </div>
+            </div>
+            <div>
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: var(--space-1);">
+                <span class="caption" style="color: var(--color-fg-muted);">필름 그레인</span>
+                <span class="overline" style="color: var(--color-fg-default);">35%</span>
+              </div>
+              <div class="slider slider--active">
+                <div class="slider__track"></div>
+                <div class="slider__progress" style="width: 35%"></div>
+                <div class="slider__thumb" style="left: 35%"></div>
+              </div>
+            </div>
+          </div>
+          <div style="margin-top: var(--space-6); padding-top: var(--space-4); border-top: 1px solid var(--color-border-subtle);">
+            <button class="btn btn--accent" style="width: 100%;">Threads에 게시</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── 6. Responsive Notes ─────────────────────────── -->
+  <section class="section">
+    <div class="container">
+      <div class="section__head">
+        <div class="section__num">06 · Responsive</div>
+        <h2 class="section__title">320px부터 4K까지, 동일한 캐릭터.</h2>
+      </div>
+
+      <div style="display: grid; gap: var(--space-3);">
+        <div class="card">
+          <div style="display: flex; gap: var(--space-4); align-items: baseline;">
+            <span class="overline" style="color: var(--color-accent); flex-shrink: 0; min-width: 90px;">XS · 0px+</span>
+            <p class="body-sm" lang="ko">단일 컬럼, 캔버스 100% 너비, 하단 고정 툴바 64px. 디스플레이 폰트 -1단계 (88 → 64). 페이지 패딩 16px.</p>
+          </div>
+        </div>
+        <div class="card">
+          <div style="display: flex; gap: var(--space-4); align-items: baseline;">
+            <span class="overline" style="color: var(--color-accent); flex-shrink: 0; min-width: 90px;">SM · 640px</span>
+            <p class="body-sm" lang="ko">2컬럼 그리드 가능. 카드 가로 배치. 페이지 패딩 24px.</p>
+          </div>
+        </div>
+        <div class="card">
+          <div style="display: flex; gap: var(--space-4); align-items: baseline;">
+            <span class="overline" style="color: var(--color-accent); flex-shrink: 0; min-width: 90px;">MD · 768px</span>
+            <p class="body-sm" lang="ko">8컬럼 그리드. 페이지 패딩 32px. 사이드바 등장 시작 (편집기 좌측).</p>
+          </div>
+        </div>
+        <div class="card">
+          <div style="display: flex; gap: var(--space-4); align-items: baseline;">
+            <span class="overline" style="color: var(--color-accent); flex-shrink: 0; min-width: 90px;">LG · 1024px</span>
+            <p class="body-sm" lang="ko">12컬럼 그리드. 편집기 3컬럼 레이아웃 (도구 240 + 캔버스 + 속성 280). 페이지 패딩 48px.</p>
+          </div>
+        </div>
+        <div class="card">
+          <div style="display: flex; gap: var(--space-4); align-items: baseline;">
+            <span class="overline" style="color: var(--color-accent); flex-shrink: 0; min-width: 90px;">XL · 1280px</span>
+            <p class="body-sm" lang="ko">컨테이너 max 1200px. 디스플레이 폰트 +0.5단계. 4K 프리뷰 가능.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── Footer ───────────────────────────────────────── -->
+  <footer class="footer">
+    <div class="container">
+      <div>photo-magic <span class="footer__separator">/</span> design system v1 <span class="footer__separator">/</span> editorial film studio</div>
+      <div style="margin-top: var(--space-3); color: var(--color-fg-disabled);">Fraunces · Pretendard · Lora · JetBrains Mono</div>
+    </div>
+  </footer>
+
+  <script>
+    // ─── Theme Toggle ────────────────────────────────────
+    const html = document.documentElement;
+    const savedTheme = localStorage.getItem('photo-magic-theme');
+    if (savedTheme) html.setAttribute('data-theme', savedTheme);
+
+    document.getElementById('themeToggle').addEventListener('click', () => {
+      const next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+      html.setAttribute('data-theme', next);
+      localStorage.setItem('photo-magic-theme', next);
+    });
+
+    // ─── Toggle Switches ─────────────────────────────────
+    document.querySelectorAll('[data-toggle]').forEach(t => {
+      t.addEventListener('click', () => {
+        const on = t.classList.toggle('toggle--on');
+        t.setAttribute('aria-pressed', String(on));
+      });
+    });
+
+    // ─── Sliders (drag interaction) ──────────────────────
+    document.querySelectorAll('.slider').forEach(slider => {
+      const track = slider.querySelector('.slider__track');
+      const progress = slider.querySelector('.slider__progress');
+      const thumb = slider.querySelector('.slider__thumb');
+      let dragging = false;
+
+      const updateFromEvent = (e) => {
+        const rect = slider.getBoundingClientRect();
+        const x = (e.clientX ?? e.touches?.[0]?.clientX) - rect.left;
+        const ratio = Math.min(1, Math.max(0, x / rect.width));
+        progress.style.width = (ratio * 100) + '%';
+        thumb.style.left = (ratio * 100) + '%';
+        slider.classList.toggle('slider--active', ratio > 0 && ratio < 1);
+      };
+
+      slider.addEventListener('mousedown', (e) => { dragging = true; updateFromEvent(e); });
+      slider.addEventListener('touchstart', (e) => { dragging = true; updateFromEvent(e); }, { passive: true });
+      window.addEventListener('mousemove', (e) => { if (dragging) updateFromEvent(e); });
+      window.addEventListener('touchmove', (e) => { if (dragging) updateFromEvent(e); }, { passive: true });
+      window.addEventListener('mouseup', () => { dragging = false; });
+      window.addEventListener('touchend', () => { dragging = false; });
+    });
+
+    // ─── Preset Card Selection ───────────────────────────
+    document.querySelectorAll('.preset-card').forEach(card => {
+      card.addEventListener('click', () => {
+        document.querySelectorAll('.preset-card').forEach(c => c.classList.remove('preset-card--active'));
+        card.classList.add('preset-card--active');
+      });
+    });
+
+    // ─── Ratio Tab Selection ─────────────────────────────
+    document.querySelectorAll('.ratio-tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        document.querySelectorAll('.ratio-tab').forEach(t => t.classList.remove('ratio-tab--active'));
+        tab.classList.add('ratio-tab--active');
+      });
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,10 @@
+{
+  "extends": "@photo-magic/config/tsconfig.library.json",
+  "compilerOptions": {
+    "outDir": "dist",
+    "rootDir": ".",
+    "jsx": "react-jsx",
+    "types": ["react", "react-dom"]
+  },
+  "include": ["src/**/*", "tokens/**/*"]
+}

@@ -1,0 +1,42 @@
+{
+  "name": "@photo-magic/ui",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "sideEffects": ["**/*.css"],
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "default": "./src/index.ts"
+    },
+    "./styles.css": "./tokens/tokens.css",
+    "./tokens": {
+      "types": "./tokens/tokens.ts",
+      "default": "./tokens/tokens.ts"
+    },
+    "./tokens/tailwind": {
+      "types": "./tokens/tailwind.tokens.ts",
+      "default": "./tokens/tailwind.tokens.ts"
+    }
+  },
+  "files": ["src", "tokens"],
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "clean": "rm -rf dist .turbo"
+  },
+  "dependencies": {
+    "clsx": "^2.1.1"
+  },
+  "peerDependencies": {
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  },
+  "devDependencies": {
+    "@photo-magic/config": "workspace:*",
+    "@types/react": "^19.0.2",
+    "@types/react-dom": "^19.0.2",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "typescript": "^5.7.2"
+  }
+}

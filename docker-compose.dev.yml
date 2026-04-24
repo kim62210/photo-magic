@@ -1,0 +1,75 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: pm-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: photomagic
+      POSTGRES_PASSWORD: dev
+      POSTGRES_DB: photomagic
+    ports:
+      - "5432:5432"
+    volumes:
+      - pm-postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U photomagic"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: pm-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - pm-redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  minio:
+    image: minio/minio:latest
+    container_name: pm-minio
+    restart: unless-stopped
+    environment:
+      MINIO_ROOT_USER: minio
+      MINIO_ROOT_PASSWORD: minio12345
+    command: server /data --console-address ":9001"
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    volumes:
+      - pm-minio-data:/data
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  imgproxy:
+    image: darthsim/imgproxy:latest
+    container_name: pm-imgproxy
+    restart: unless-stopped
+    environment:
+      IMGPROXY_KEY: ""
+      IMGPROXY_SALT: ""
+      IMGPROXY_USE_S3: "true"
+      IMGPROXY_S3_ENDPOINT: http://minio:9000
+      IMGPROXY_S3_REGION: us-east-1
+      AWS_ACCESS_KEY_ID: minio
+      AWS_SECRET_ACCESS_KEY: minio12345
+      IMGPROXY_DEVELOPMENT_ERRORS_MODE: "true"
+    ports:
+      - "8080:8080"
+    depends_on:
+      minio:
+        condition: service_healthy
+
+volumes:
+  pm-postgres-data:
+  pm-redis-data:
+  pm-minio-data:
