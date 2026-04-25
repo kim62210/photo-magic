@@ -30,3 +30,4 @@ export { CURVES_FRAG } from './webgl/shaders/curves.frag';
 export { HSL_SELECTIVE_FRAG } from './webgl/shaders/hsl-selective.frag';
 export { SHARPEN_FRAG } from './webgl/shaders/sharpen.frag';
 export { VIGNETTE_FRAG, LIGHT_LEAK_TYPES } from './webgl/shaders/vignette.frag';
+export * from './paint';
