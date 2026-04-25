@@ -5,11 +5,12 @@ import { Badge, Button, ThemeToggle } from '@photo-magic/ui';
 
 export interface TopBarProps {
   onExport: () => void;
+  onShare?: () => void;
   exporting: boolean;
   hasImage: boolean;
 }
 
-export function TopBar({ onExport, exporting, hasImage }: TopBarProps) {
+export function TopBar({ onExport, onShare, exporting, hasImage }: TopBarProps) {
   return (
     <header className="editor__topbar">
       <div className="editor__topbar-left">
@@ -23,7 +24,7 @@ export function TopBar({ onExport, exporting, hasImage }: TopBarProps) {
         <Button variant="secondary" size="sm" onClick={onExport} disabled={!hasImage || exporting}>
           {exporting ? '저장 중…' : '다운로드'}
         </Button>
-        <Button variant="primary" size="sm" disabled={!hasImage}>
+        <Button variant="primary" size="sm" onClick={onShare} disabled={!hasImage || !onShare}>
           업로드
         </Button>
       </div>
