@@ -20,3 +20,4 @@ export * from './face/beauty-renderer';
 export type * from './face/skin-mask';
 export * from './safety/nsfw-stub';
 export * from './safety/c2pa-stub';
+export * from './annotations';
