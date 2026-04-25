@@ -11,3 +11,6 @@ export * from './persist';
 export * from './auto-correct';
 export * from './webgl/renderer';
 export { hasWebGL2 } from './webgl/context';
+export * from './face/landmarks';
+export * from './face/beauty-renderer';
+export type * from './face/skin-mask';
