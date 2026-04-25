@@ -37,7 +37,7 @@ export default function LandingPage() {
                 편집 시작하기
               </Button>
             </Link>
-            <Link href="#tiers">
+            <Link href="/plans">
               <Button variant="secondary" size="lg">
                 플랜 보기
               </Button>
