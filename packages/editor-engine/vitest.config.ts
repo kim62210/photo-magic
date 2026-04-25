@@ -5,6 +5,7 @@ export default defineConfig({
     name: 'editor-engine',
     environment: 'jsdom',
     globals: false,
+    setupFiles: ['./src/__tests__/setup.ts'],
     include: ['src/**/*.test.ts', 'src/**/*.test.tsx'],
   },
 });
