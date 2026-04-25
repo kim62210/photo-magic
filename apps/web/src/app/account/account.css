@@ -1,0 +1,223 @@
+.account-main { padding: 32px 0 64px; }
+@media (min-width: 1024px) { .account-main { padding: 56px 0 96px; } }
+
+.account__eyebrow {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-fg-muted);
+  margin-bottom: 12px;
+}
+.account__title {
+  font-family: var(--font-display);
+  font-size: clamp(36px, 6vw, 56px);
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+  font-weight: 500;
+  color: var(--color-fg-default);
+}
+.account__title em {
+  font-style: italic;
+  color: var(--color-accent);
+  font-weight: 500;
+}
+.account__lead {
+  margin-top: 8px;
+  color: var(--color-fg-muted);
+  font-size: 15px;
+  line-height: 1.6;
+  max-width: 48ch;
+}
+
+.account-card {
+  margin-top: 24px;
+  padding: 24px;
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-md);
+  background: var(--color-bg-base);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.account-card--danger {
+  border-color: rgba(180, 92, 79, 0.4);
+  background: var(--state-danger-soft);
+}
+.account-card--debug {
+  border-style: dashed;
+  background: var(--color-bg-subtle);
+}
+.account-card__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.account-card__head h2 {
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: -0.005em;
+  color: var(--color-fg-default);
+}
+.account-card__hint {
+  font-size: 12px;
+  font-family: var(--font-mono);
+  color: var(--color-fg-subtle);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+/* ─── Profile ─────────────────────────────────────────────── */
+
+.account-profile {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.account-profile__avatar {
+  width: 64px;
+  height: 64px;
+  border-radius: 9999px;
+  flex-shrink: 0;
+  object-fit: cover;
+  background: var(--color-bg-subtle);
+  border: 1px solid var(--color-border-subtle);
+}
+.account-profile__avatar--fallback {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display);
+  font-size: 28px;
+  font-weight: 600;
+  color: var(--color-fg-default);
+}
+.account-profile__meta {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+  min-width: 200px;
+}
+.account-profile__name {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--color-fg-default);
+  letter-spacing: -0.01em;
+  flex-wrap: wrap;
+}
+.account-profile__email {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--color-fg-muted);
+}
+.account-profile__joined {
+  font-size: 12px;
+  color: var(--color-fg-subtle);
+  font-family: var(--font-mono);
+  letter-spacing: 0.02em;
+}
+.account-profile__actions { margin-left: auto; }
+
+/* ─── Plan summary ────────────────────────────────────────── */
+
+.account-plan {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.account-plan__main {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.account-plan__name {
+  font-family: var(--font-display);
+  font-size: 28px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--color-fg-default);
+}
+.account-plan__expiry {
+  font-size: 13px;
+  color: var(--color-fg-muted);
+}
+.account-plan__actions {
+  display: flex;
+  gap: 8px;
+}
+
+/* ─── Usage stats ─────────────────────────────────────────── */
+
+.account-usage {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+}
+@media (min-width: 640px) {
+  .account-usage { grid-template-columns: repeat(3, 1fr); }
+}
+
+.usage-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 16px;
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-sm);
+  background: var(--color-bg-subtle);
+}
+.usage-stat__label {
+  font-size: 12px;
+  font-family: var(--font-mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-fg-muted);
+}
+.usage-stat__value {
+  font-variant-numeric: tabular-nums;
+  font-family: var(--font-display);
+  color: var(--color-fg-default);
+}
+.usage-stat__value strong {
+  font-size: 28px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+.usage-stat__value span {
+  font-size: 14px;
+  color: var(--color-fg-muted);
+  font-family: var(--font-mono);
+}
+.usage-stat__bar {
+  height: 4px;
+  background: var(--color-border-subtle);
+  border-radius: 9999px;
+  overflow: hidden;
+  margin-top: 4px;
+}
+.usage-stat__bar-fill {
+  height: 100%;
+  background: var(--color-accent);
+  transition: width var(--motion-base) var(--ease-out);
+}
+
+/* ─── Danger zone ─────────────────────────────────────────── */
+
+.account-danger__body {
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--color-fg-default);
+  max-width: 60ch;
+}

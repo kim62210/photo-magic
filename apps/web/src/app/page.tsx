@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { Badge, Button, ThemeToggle } from '@photo-magic/ui';
+import { HeaderUserMenu } from '@/components/auth/HeaderUserMenu';
 
 export default function LandingPage() {
   return (
@@ -14,7 +15,13 @@ export default function LandingPage() {
               편집기
             </Button>
           </Link>
+          <Link href="/plans">
+            <Button variant="ghost" size="sm">
+              플랜
+            </Button>
+          </Link>
           <ThemeToggle />
+          <HeaderUserMenu context="landing" />
         </nav>
       </header>
 
@@ -119,7 +126,7 @@ export default function LandingPage() {
                 <li>배경 제거 · 업스케일</li>
                 <li>해상도 4K · 우선 처리</li>
               </ul>
-              <Link href="/editor">
+              <Link href="/checkout?plan=pro">
                 <Button variant="primary" fullWidth>
                   Pro 시작하기
                 </Button>
@@ -138,7 +145,7 @@ export default function LandingPage() {
                 <li>커스텀 LUT 업로드</li>
                 <li>8K · 최상위 처리</li>
               </ul>
-              <Link href="/editor">
+              <Link href="/checkout?plan=pro-plus">
                 <Button variant="secondary" fullWidth>
                   Pro+ 시작하기
                 </Button>
