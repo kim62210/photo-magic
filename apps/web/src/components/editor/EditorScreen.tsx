@@ -1,7 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
-import Link from 'next/link';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import {
   RATIO_PRESETS,
   type PlatformRatio,
@@ -9,10 +8,20 @@ import {
 } from '@photo-magic/shared-types';
 import {
   adjustmentsToCssFilter,
+  analyzeImage,
+  applyCrop,
+  clampCropRect,
   downloadBlob,
+  exportCanvas,
   FILM_PRESETS,
-  validateImage,
+  getPreset,
+  loadSession,
   useEditorStore,
+  useSessionPersist,
+  useZoomPan,
+  validateImage,
+  type CropRect,
+  type PersistedSession,
 } from '@photo-magic/editor-engine';
 import {
   Button,
@@ -21,14 +30,27 @@ import {
   RatioTabs,
   Slider,
   ThemeToggle,
+  Toggle,
   useToast,
 } from '@photo-magic/ui';
 import { UploadDrop } from './UploadDrop';
 import { CanvasStage } from './CanvasStage';
 import { TopBar } from './TopBar';
+import { CropOverlay } from './CropOverlay';
+import { ResizePanel } from './ResizePanel';
+import { SafeZoneOverlay } from './SafeZoneOverlay';
+import { CanvasGestures } from './CanvasGestures';
+import { SessionRecoveryBanner } from './SessionRecoveryBanner';
+import { BeforeAfterCompare } from './BeforeAfterCompare';
+import { ExportModal } from './ExportModal';
 import './editor.css';
 
-const ADJUST_KEYS: { key: keyof AdjustmentValues; label: string; min?: number; max?: number; unit?: string }[] = [
+const ADJUST_KEYS: {
+  key: keyof AdjustmentValues;
+  label: string;
+  min?: number;
+  max?: number;
+}[] = [
   { key: 'exposure', label: '노출' },
   { key: 'contrast', label: '대비' },
   { key: 'saturation', label: '채도' },
@@ -40,7 +62,7 @@ const ADJUST_KEYS: { key: keyof AdjustmentValues; label: string; min?: number; m
   { key: 'grain', label: '그레인', min: 0, max: 100 },
 ];
 
-type Tab = 'preset' | 'adjust' | 'crop';
+type Tab = 'preset' | 'adjust' | 'crop' | 'resize';
 
 export function EditorScreen() {
   const image = useEditorStore((s) => s.image);
@@ -64,10 +86,28 @@ export function EditorScreen() {
 
   const { push: pushToast } = useToast();
   const [tab, setTab] = useState<Tab>('preset');
-  const [exporting, setExporting] = useState(false);
+  const [cropMode, setCropMode] = useState(false);
+  const [showSafeZone, setShowSafeZone] = useState(true);
+  const [exportOpen, setExportOpen] = useState(false);
+  const [recoveredSession, setRecoveredSession] = useState<PersistedSession | null>(null);
+  const [autoCorrectBusy, setAutoCorrectBusy] = useState(false);
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const canvasWrapRef = useRef<HTMLDivElement>(null);
+  const imageElRef = useRef<HTMLImageElement | null>(null);
 
-  // 키보드 단축키
+  useSessionPersist();
+
+  const zoomPan = useZoomPan<HTMLDivElement>(canvasWrapRef);
+
+  // Session recovery detection — only if there's no active image
+  useEffect(() => {
+    if (image) return;
+    void loadSession().then((session) => {
+      if (session) setRecoveredSession(session);
+    });
+  }, [image]);
+
+  // Keyboard shortcuts
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
       const meta = e.metaKey || e.ctrlKey;
@@ -80,62 +120,155 @@ export function EditorScreen() {
         redoFn();
       } else if (e.key.toLowerCase() === 's') {
         e.preventDefault();
-        handleExport();
+        setExportOpen(true);
+      } else if (e.key === 'Escape' && cropMode) {
+        e.preventDefault();
+        setCropMode(false);
       }
     };
     window.addEventListener('keydown', handler);
     return () => window.removeEventListener('keydown', handler);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [undoFn, redoFn]);
+  }, [undoFn, redoFn, cropMode]);
 
-  async function handleFile(file: File) {
-    const result = await validateImage(file);
-    if (!result.ok) {
-      pushToast({ tone: 'danger', title: '업로드 실패', description: result.error.message });
-      return;
-    }
-    const url = URL.createObjectURL(result.blob);
-    if (image?.url) URL.revokeObjectURL(image.url);
-    setImage({ meta: result.meta, url });
-    pushToast({
-      tone: 'success',
-      title: '이미지 불러오기 완료',
-      description: `${result.meta.width}×${result.meta.height} · ${result.meta.format.toUpperCase()}`,
-    });
-  }
+  const handleFile = useCallback(
+    async (file: File) => {
+      const result = await validateImage(file);
+      if (!result.ok) {
+        pushToast({ tone: 'danger', title: '업로드 실패', description: result.error.message });
+        return;
+      }
+      const url = URL.createObjectURL(result.blob);
+      if (image?.url) URL.revokeObjectURL(image.url);
+      setImage({ meta: result.meta, url });
+      setRecoveredSession(null);
+      pushToast({
+        tone: 'success',
+        title: '이미지 불러오기 완료',
+        description: `${result.meta.width}×${result.meta.height} · ${result.meta.format.toUpperCase()}`,
+      });
+    },
+    [image, setImage, pushToast],
+  );
 
-  async function handleExport() {
-    const canvas = canvasRef.current;
-    if (!canvas || !image) {
-      pushToast({ tone: 'warning', title: '이미지를 먼저 업로드하세요.' });
+  const handleRestore = useCallback(
+    (session: PersistedSession) => {
+      fetch(session.imageDataUrl)
+        .then((r) => r.blob())
+        .then((blob) => {
+          const url = URL.createObjectURL(blob);
+          setImage({ meta: session.imageMeta, url });
+          // Apply saved adjustments on next tick to avoid racing history push
+          setTimeout(() => {
+            for (const key of Object.keys(session.adjustments) as (keyof AdjustmentValues)[]) {
+              const value = session.adjustments[key];
+              if (typeof value === 'number') setAdjustment(key, value);
+            }
+            if (session.presetId) setPreset(session.presetId, session.presetIntensity);
+            setRatio(session.ratio);
+            setRecoveredSession(null);
+            pushToast({ tone: 'success', title: '이전 작업을 복구했어요' });
+          }, 0);
+        })
+        .catch(() => {
+          pushToast({ tone: 'danger', title: '세션 복구에 실패했어요' });
+        });
+    },
+    [setImage, setAdjustment, setPreset, setRatio, pushToast],
+  );
+
+  const handleAutoCorrect = useCallback(async () => {
+    const img = imageElRef.current;
+    if (!img && !canvasRef.current) {
+      pushToast({ tone: 'warning', title: '이미지를 먼저 불러오세요' });
       return;
     }
     try {
-      setExporting(true);
-      const blob = await new Promise<Blob | null>((resolve) =>
-        canvas.toBlob(resolve, 'image/jpeg', 0.92),
-      );
-      if (!blob) throw new Error('canvas toBlob returned null');
-      const ts = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
-      downloadBlob(blob, `photo-magic-${ts}.jpg`);
-      pushToast({ tone: 'success', title: '다운로드 시작', description: '저장 완료' });
+      setAutoCorrectBusy(true);
+      const source = img ?? canvasRef.current;
+      if (!source) return;
+      const r = await analyzeImage(source);
+      setAdjustment('exposure', r.exposure);
+      setAdjustment('contrast', r.contrast);
+      setAdjustment('saturation', r.saturation);
+      setAdjustment('temperature', r.temperature);
+      setAdjustment('highlights', r.highlights);
+      setAdjustment('shadows', r.shadows);
+      if (r.recommendedPreset) setPreset(r.recommendedPreset);
+      pushToast({
+        tone: 'success',
+        title: '자동 보정 적용',
+        description: r.recommendedPreset
+          ? `추천 프리셋: ${getPreset(r.recommendedPreset)?.label ?? ''}`
+          : '노출·색감을 조정했어요',
+      });
     } catch (err) {
-      const msg = err instanceof Error ? err.message : 'export failed';
-      pushToast({ tone: 'danger', title: '내보내기 실패', description: msg });
+      const msg = err instanceof Error ? err.message : 'analyze failed';
+      pushToast({ tone: 'danger', title: '자동 보정 실패', description: msg });
     } finally {
-      setExporting(false);
+      setAutoCorrectBusy(false);
     }
-  }
+  }, [setAdjustment, setPreset, pushToast]);
+
+  const handleCropConfirm = useCallback(
+    async (crop: CropRect) => {
+      const canvas = canvasRef.current;
+      if (!canvas) return;
+      const clamped = clampCropRect(canvas, crop);
+      const cropped = applyCrop(canvas, clamped);
+      const blob = await new Promise<Blob | null>((resolve) =>
+        cropped.toBlob(resolve, 'image/png'),
+      );
+      if (!blob) {
+        pushToast({ tone: 'danger', title: '자르기 실패' });
+        return;
+      }
+      const url = URL.createObjectURL(blob);
+      if (image?.url) URL.revokeObjectURL(image.url);
+      setImage({
+        meta: {
+          ...image!.meta,
+          width: cropped.width,
+          height: cropped.height,
+        },
+        url,
+      });
+      setCropMode(false);
+      pushToast({ tone: 'success', title: '자르기 완료' });
+    },
+    [image, setImage, pushToast],
+  );
+
+  const handleResize = useCallback(
+    (w: number, h: number) => {
+      pushToast({
+        tone: 'info',
+        title: '리사이즈 예약',
+        description: `${w}×${h}로 내보내기 시 반영됩니다.`,
+      });
+    },
+    [pushToast],
+  );
 
   const filterCss = adjustmentsToCssFilter(adjustments);
+
+  const currentPreset = presetId ? getPreset(presetId) : undefined;
 
   return (
     <div className="editor">
       <TopBar
-        onExport={handleExport}
-        exporting={exporting}
+        onExport={() => setExportOpen(true)}
+        exporting={false}
         hasImage={!!image}
       />
+
+      {!image && recoveredSession ? (
+        <div className="editor__recovery">
+          <SessionRecoveryBanner
+            onRestore={handleRestore}
+            onDismiss={() => setRecoveredSession(null)}
+          />
+        </div>
+      ) : null}
 
       {!image ? (
         <main className="editor__empty">
@@ -164,6 +297,14 @@ export function EditorScreen() {
               onReset={reset}
               onUndo={undoFn}
               onRedo={redoFn}
+              onCrop={() => setCropMode(true)}
+              onAutoCorrect={handleAutoCorrect}
+              autoCorrectBusy={autoCorrectBusy}
+              canvas={canvasRef.current}
+              imageUrl={image.url}
+              zoomReset={zoomPan.reset}
+              zoomIn={() => zoomPan.zoomBy(1.15)}
+              zoomOut={() => zoomPan.zoomBy(1 / 1.15)}
             />
             <input
               id="pm-replace-input"
@@ -179,17 +320,55 @@ export function EditorScreen() {
           </aside>
 
           <section className="editor__canvas">
-            <CanvasStage
-              ref={canvasRef}
-              imageUrl={image.url}
-              imageMeta={image.meta}
-              ratio={ratio}
-              rotation={rotation}
-              flipH={flipH}
-              flipV={flipV}
-              filterCss={filterCss}
-              presetId={presetId}
-            />
+            <div ref={canvasWrapRef} className="editor__canvas-wrap">
+              <CanvasGestures
+                onZoom={(factor, cx, cy) => zoomPan.zoomBy(factor, cx, cy)}
+                onPan={zoomPan.setPan}
+                onReset={zoomPan.reset}
+                disabled={cropMode}
+              >
+                <div
+                  className="editor__canvas-transform"
+                  style={{
+                    transform: zoomPan.transform,
+                    transformOrigin: 'center center',
+                  }}
+                >
+                  <CanvasStage
+                    ref={canvasRef}
+                    imageUrl={image.url}
+                    imageMeta={image.meta}
+                    ratio={ratio}
+                    rotation={rotation}
+                    flipH={flipH}
+                    flipV={flipV}
+                    filterCss={filterCss}
+                    presetId={presetId}
+                    onImageElement={(el) => {
+                      imageElRef.current = el;
+                    }}
+                  />
+                  {showSafeZone && canvasRef.current ? (
+                    <SafeZoneOverlay
+                      ratio={ratio}
+                      canvasWidth={canvasRef.current.width}
+                      canvasHeight={canvasRef.current.height}
+                    />
+                  ) : null}
+                </div>
+              </CanvasGestures>
+
+              {cropMode ? (
+                <CropOverlay
+                  canvas={canvasRef.current}
+                  aspect={undefined}
+                  onConfirm={handleCropConfirm}
+                  onCancel={() => setCropMode(false)}
+                  mode="free"
+                />
+              ) : null}
+            </div>
+
             <div className="editor__ratio-bar">
               <RatioTabs
                 items={RATIO_PRESETS.map((r) => ({
@@ -214,22 +393,35 @@ export function EditorScreen() {
               <TabBtn active={tab === 'crop'} onClick={() => setTab('crop')}>
                 자르기
               </TabBtn>
+              <TabBtn active={tab === 'resize'} onClick={() => setTab('resize')}>
+                크기
+              </TabBtn>
             </div>
 
             <div className="editor__panel">
               {tab === 'preset' ? (
                 <div className="editor__presets">
-                  <p className="editor__panel-eyebrow">필름 프리셋</p>
+                  <div className="editor__panel-head">
+                    <p className="editor__panel-eyebrow">필름 프리셋 {FILM_PRESETS.length}종</p>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={handleAutoCorrect}
+                      isLoading={autoCorrectBusy}
+                    >
+                      ✨ 자동 보정
+                    </Button>
+                  </div>
                   <PresetGrid
                     columns={2}
                     items={FILM_PRESETS.map((p) => ({
                       id: p.id,
                       label: p.label,
-                      description: p.description,
+                      description: p.koreanSubtitle ?? p.description,
                       badge: p.badge,
                     }))}
                     value={presetId ?? 'original'}
-                    onSelect={setPreset}
+                    onSelect={(id) => setPreset(id)}
                   />
                 </div>
               ) : null}
@@ -259,8 +451,15 @@ export function EditorScreen() {
                 <div className="editor__crop">
                   <p className="editor__panel-eyebrow">자르기 · 회전</p>
                   <p className="editor__crop-hint">
-                    상단 비율 탭에서 비율을 선택하세요. 추가 정밀 자르기는 다음 업데이트에서 제공됩니다.
+                    상단 비율 탭으로 비율을 고정하고, 아래 버튼으로 인터랙티브 자르기 모드를 시작하세요.
                   </p>
+                  <Button
+                    variant={cropMode ? 'secondary' : 'primary'}
+                    onClick={() => setCropMode((v) => !v)}
+                    fullWidth
+                  >
+                    {cropMode ? '자르기 모드 종료' : '자르기 시작'}
+                  </Button>
                   <div className="editor__crop-actions">
                     <Button variant="secondary" size="sm" onClick={() => rotate(-90)}>
                       ↺ 좌회전
@@ -275,12 +474,42 @@ export function EditorScreen() {
                       ↕ 상하 반전
                     </Button>
                   </div>
+                  <Toggle
+                    label="안전 영역 가이드"
+                    description="9:16 스토리 비율에서만 표시됩니다."
+                    checked={showSafeZone}
+                    onChange={(e) => setShowSafeZone((e.target as HTMLInputElement).checked)}
+                  />
                 </div>
+              ) : null}
+
+              {tab === 'resize' ? (
+                <ResizePanel
+                  width={image.meta.width}
+                  height={image.meta.height}
+                  onResize={handleResize}
+                />
               ) : null}
             </div>
           </aside>
         </main>
       )}
+
+      {image ? (
+        <BeforeAfterCompare
+          originalUrl={image.url}
+          editedCanvas={canvasRef.current}
+          defaultMode="press"
+        />
+      ) : null}
+
+      <ExportModal
+        open={exportOpen}
+        onClose={() => setExportOpen(false)}
+        canvas={canvasRef.current}
+        currentRatio={ratio}
+        presetLabel={currentPreset?.label}
+      />
     </div>
   );
 }
@@ -308,6 +537,24 @@ function TabBtn({
   );
 }
 
+interface ToolRailProps {
+  onUpload: () => void;
+  onRotate: () => void;
+  onFlipH: () => void;
+  onFlipV: () => void;
+  onReset: () => void;
+  onUndo: () => void;
+  onRedo: () => void;
+  onCrop: () => void;
+  onAutoCorrect: () => void;
+  autoCorrectBusy: boolean;
+  canvas: HTMLCanvasElement | null;
+  imageUrl: string;
+  zoomReset: () => void;
+  zoomIn: () => void;
+  zoomOut: () => void;
+}
+
 function ToolRail({
   onUpload,
   onRotate,
@@ -316,20 +563,25 @@ function ToolRail({
   onReset,
   onUndo,
   onRedo,
-}: {
-  onUpload: () => void;
-  onRotate: () => void;
-  onFlipH: () => void;
-  onFlipV: () => void;
-  onReset: () => void;
-  onUndo: () => void;
-  onRedo: () => void;
-}) {
+  onCrop,
+  onAutoCorrect,
+  autoCorrectBusy,
+  zoomReset,
+  zoomIn,
+  zoomOut,
+}: ToolRailProps) {
   return (
     <div className="editor__tool-rail">
       <IconButton label="이미지 교체" onClick={onUpload}>
         <span aria-hidden>⬆︎</span>
       </IconButton>
+      <IconButton label="자르기" onClick={onCrop}>
+        <span aria-hidden>⌘</span>
+      </IconButton>
+      <IconButton label={autoCorrectBusy ? '분석 중…' : '자동 보정'} onClick={onAutoCorrect}>
+        <span aria-hidden>✨</span>
+      </IconButton>
+      <hr className="editor__tool-sep" />
       <IconButton label="실행 취소 (Ctrl+Z)" onClick={onUndo}>
         <span aria-hidden>↶</span>
       </IconButton>
@@ -347,7 +599,17 @@ function ToolRail({
         <span aria-hidden>↕</span>
       </IconButton>
       <hr className="editor__tool-sep" />
-      <IconButton label="초기화" onClick={onReset}>
+      <IconButton label="확대" onClick={zoomIn}>
+        <span aria-hidden>＋</span>
+      </IconButton>
+      <IconButton label="축소" onClick={zoomOut}>
+        <span aria-hidden>－</span>
+      </IconButton>
+      <IconButton label="원본 크기" onClick={zoomReset}>
+        <span aria-hidden>◉</span>
+      </IconButton>
+      <hr className="editor__tool-sep" />
+      <IconButton label="편집 초기화" onClick={onReset}>
         <span aria-hidden>⌫</span>
       </IconButton>
     </div>

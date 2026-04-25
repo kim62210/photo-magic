@@ -1,5 +1,5 @@
 {
-  "name": "@photo-magic/editor-engine",
+  "name": "@photo-magic/db",
   "version": "0.0.0",
   "private": true,
   "type": "module",
@@ -10,30 +10,25 @@
       "types": "./src/index.ts",
       "default": "./src/index.ts"
     },
-    "./store": {
-      "types": "./src/store.ts",
-      "default": "./src/store.ts"
+    "./schema": {
+      "types": "./src/schema.ts",
+      "default": "./src/schema.ts"
     }
   },
   "scripts": {
     "typecheck": "tsc --noEmit",
-    "test": "vitest run",
-    "test:watch": "vitest",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "drizzle-kit migrate",
+    "db:studio": "drizzle-kit studio",
     "clean": "rm -rf dist .turbo"
   },
   "dependencies": {
-    "@photo-magic/shared-types": "workspace:*",
-    "heic2any": "^0.0.4",
-    "idb-keyval": "^6.2.1",
-    "zustand": "^5.0.2"
-  },
-  "peerDependencies": {
-    "react": "^19.0.0"
+    "drizzle-orm": "^0.38.3",
+    "postgres": "^3.4.5"
   },
   "devDependencies": {
     "@photo-magic/config": "workspace:*",
-    "@types/react": "^19.0.2",
-    "react": "^19.0.0",
+    "drizzle-kit": "^0.30.1",
     "typescript": "^5.7.2"
   }
 }

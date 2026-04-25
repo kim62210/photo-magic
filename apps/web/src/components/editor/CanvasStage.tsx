@@ -13,10 +13,11 @@ export interface CanvasStageProps {
   flipV: boolean;
   filterCss: string;
   presetId?: string;
+  onImageElement?: (el: HTMLImageElement | null) => void;
 }
 
 export const CanvasStage = forwardRef<HTMLCanvasElement, CanvasStageProps>(function CanvasStage(
-  { imageUrl, imageMeta, ratio, rotation, flipH, flipV, filterCss, presetId },
+  { imageUrl, imageMeta, ratio, rotation, flipH, flipV, filterCss, presetId, onImageElement },
   ref,
 ) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -31,11 +32,13 @@ export const CanvasStage = forwardRef<HTMLCanvasElement, CanvasStageProps>(funct
     img.crossOrigin = 'anonymous';
     img.onload = () => {
       imgRef.current = img;
+      onImageElement?.(img);
       drawCanvas();
     };
     img.src = imageUrl;
     return () => {
       imgRef.current = null;
+      onImageElement?.(null);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [imageUrl]);

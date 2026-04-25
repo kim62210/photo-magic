@@ -1,0 +1,52 @@
+/**
+ * Safe-zone overlay — renders dashed guides for platform-specific safe areas
+ * (e.g. Instagram Stories upper/lower reserved regions). Purely decorative;
+ * non-interactive.
+ */
+
+.safe-zone-overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: calc(var(--z-overlay) - 1);
+}
+
+.safe-zone-overlay__frame {
+  position: absolute;
+  box-sizing: border-box;
+  border: 1px dashed rgba(255, 255, 255, 0.85);
+  mix-blend-mode: difference;
+}
+
+.safe-zone-overlay__label {
+  position: absolute;
+  top: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 3px 8px;
+  background: rgba(10, 9, 8, 0.6);
+  color: #fff;
+  font-family: var(--font-mono);
+  font-size: var(--text-overline);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  border-radius: var(--radius-xs);
+  white-space: nowrap;
+}
+
+/* Top / bottom unsafe bands — subtle diagonal hatching for clarity. */
+.safe-zone-overlay__band {
+  position: absolute;
+  left: 0;
+  right: 0;
+  background-image: repeating-linear-gradient(
+    45deg,
+    rgba(255, 255, 255, 0.08) 0,
+    rgba(255, 255, 255, 0.08) 4px,
+    transparent 4px,
+    transparent 8px
+  );
+}
+
+.safe-zone-overlay__band--top    { top: 0; }
+.safe-zone-overlay__band--bottom { bottom: 0; }

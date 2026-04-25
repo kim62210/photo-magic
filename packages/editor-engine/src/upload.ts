@@ -7,6 +7,7 @@ import {
   type ImageMeta,
   type UploadValidationResult,
 } from '@photo-magic/shared-types';
+import { decodeHeic } from './heic';
 
 function extToFormat(mime: string, name: string): ImageFormat | null {
   const fromMime: Record<string, ImageFormat> = {
@@ -82,21 +83,27 @@ export async function validateImage(
     };
   }
 
+  // HEIC/HEIF: decode to JPEG first, then run normal validation path.
+  let workingBlob: Blob = file;
+  let workingFormat: ImageFormat = fmt;
   if (fmt === 'heic' || fmt === 'heif') {
-    const meta: ImageMeta = {
-      id: crypto.randomUUID(),
-      width: 0,
-      height: 0,
-      format: fmt,
-      sizeBytes: file.size,
-      createdAt: new Date().toISOString(),
-    };
-    return { ok: true, meta, blob: file };
+    try {
+      workingBlob = await decodeHeic(file);
+      workingFormat = 'jpeg';
+    } catch (err) {
+      return {
+        ok: false,
+        error: {
+          code: 'CORRUPT',
+          message: err instanceof Error ? err.message : 'HEIC 이미지를 디코딩할 수 없습니다.',
+        },
+      };
+    }
   }
 
   let dims: { width: number; height: number };
   try {
-    dims = await readImageDimensions(file);
+    dims = await readImageDimensions(workingBlob);
   } catch {
     return { ok: false, error: { code: 'CORRUPT', message: '이미지를 불러올 수 없습니다.' } };
   }
@@ -124,9 +131,9 @@ export async function validateImage(
     id: crypto.randomUUID(),
     width: dims.width,
     height: dims.height,
-    format: fmt,
-    sizeBytes: file.size,
+    format: workingFormat,
+    sizeBytes: workingBlob.size,
     createdAt: new Date().toISOString(),
   };
-  return { ok: true, meta, blob: file };
+  return { ok: true, meta, blob: workingBlob };
 }

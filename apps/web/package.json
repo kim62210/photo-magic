@@ -5,10 +5,12 @@
   "scripts": {
     "dev": "next dev -p 3000",
     "build": "next build",
+    "build:export": "NEXT_OUTPUT=export next build",
     "start": "next start -p 3000",
     "lint": "biome check src",
     "typecheck": "tsc --noEmit",
-    "clean": "rm -rf .next .turbo"
+    "test": "echo 'no browser tests yet' && exit 0",
+    "clean": "rm -rf .next .turbo out"
   },
   "dependencies": {
     "@photo-magic/editor-engine": "workspace:*",
@@ -21,6 +23,7 @@
   },
   "devDependencies": {
     "@photo-magic/config": "workspace:*",
+    "@sentry/browser": "^8.50.0",
     "@types/node": "^22.10.2",
     "@types/react": "^19.0.2",
     "@types/react-dom": "^19.0.2",

@@ -1,0 +1,200 @@
+/**
+ * Crop overlay — absolutely positioned over the canvas container.
+ * All colors/spacing via semantic tokens. Supports light/dark via [data-theme].
+ */
+
+.crop-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: var(--z-overlay);
+  pointer-events: auto;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: none;
+}
+
+.crop-overlay__surface {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+/* The crop box itself — uses a giant box-shadow to dim everything outside. */
+.crop-overlay__box {
+  position: absolute;
+  box-sizing: border-box;
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  box-shadow: 0 0 0 9999px rgba(10, 9, 8, 0.6);
+  cursor: move;
+  transition: border-color var(--motion-fast) var(--ease-out);
+}
+
+.crop-overlay__box:hover {
+  border-color: var(--color-accent);
+}
+
+/* Rule-of-thirds grid */
+.crop-overlay__grid {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.3;
+}
+
+.crop-overlay__grid::before,
+.crop-overlay__grid::after {
+  content: '';
+  position: absolute;
+  background: rgba(255, 255, 255, 1);
+}
+
+/* vertical thirds */
+.crop-overlay__grid::before {
+  top: 0;
+  bottom: 0;
+  left: 33.3333%;
+  width: 1px;
+  box-shadow: calc(100% / 3 * 2 - 33.3333%) 0 0 rgba(255, 255, 255, 1);
+}
+/* horizontal thirds */
+.crop-overlay__grid::after {
+  left: 0;
+  right: 0;
+  top: 33.3333%;
+  height: 1px;
+  box-shadow: 0 calc(100% / 3 * 2 - 33.3333%) 0 rgba(255, 255, 255, 1);
+}
+
+/* Handles */
+.crop-overlay__handle {
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  background: var(--color-accent);
+  border: 1px solid #fff;
+  border-radius: var(--radius-pill);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+  touch-action: none;
+}
+
+.crop-overlay__handle--edge {
+  width: 20px;
+  height: 6px;
+  border-radius: 3px;
+}
+.crop-overlay__handle--edge[data-side='top'],
+.crop-overlay__handle--edge[data-side='bottom'] {
+  width: 28px;
+  height: 6px;
+}
+.crop-overlay__handle--edge[data-side='left'],
+.crop-overlay__handle--edge[data-side='right'] {
+  width: 6px;
+  height: 28px;
+}
+
+/* corner positioning */
+.crop-overlay__handle[data-corner='nw'] { cursor: nwse-resize; top: -7px; left: -7px; }
+.crop-overlay__handle[data-corner='ne'] { cursor: nesw-resize; top: -7px; right: -7px; }
+.crop-overlay__handle[data-corner='sw'] { cursor: nesw-resize; bottom: -7px; left: -7px; }
+.crop-overlay__handle[data-corner='se'] { cursor: nwse-resize; bottom: -7px; right: -7px; }
+
+/* edge positioning */
+.crop-overlay__handle[data-side='top']    { cursor: ns-resize; top: -3px; left: 50%; transform: translateX(-50%); }
+.crop-overlay__handle[data-side='bottom'] { cursor: ns-resize; bottom: -3px; left: 50%; transform: translateX(-50%); }
+.crop-overlay__handle[data-side='left']   { cursor: ew-resize; left: -3px; top: 50%; transform: translateY(-50%); }
+.crop-overlay__handle[data-side='right']  { cursor: ew-resize; right: -3px; top: 50%; transform: translateY(-50%); }
+
+/* Control bar */
+.crop-overlay__bar {
+  position: absolute;
+  left: 50%;
+  bottom: 12px;
+  transform: translateX(-50%);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  padding: 8px 12px;
+  background: var(--color-bg-base);
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-md);
+  max-width: calc(100% - 24px);
+}
+
+.crop-overlay__aspect-row {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+
+.crop-overlay__aspect-btn {
+  appearance: none;
+  border: 1px solid var(--color-border-default);
+  background: transparent;
+  color: var(--color-fg-muted);
+  font-family: var(--font-mono);
+  font-size: var(--text-caption);
+  letter-spacing: 0.04em;
+  padding: 4px 8px;
+  border-radius: var(--radius-xs);
+  cursor: pointer;
+  transition: border-color var(--motion-fast) var(--ease-out),
+    color var(--motion-fast) var(--ease-out),
+    background var(--motion-fast) var(--ease-out);
+}
+.crop-overlay__aspect-btn:hover {
+  border-color: var(--color-border-strong);
+  color: var(--color-fg-default);
+}
+.crop-overlay__aspect-btn[data-active='true'] {
+  background: var(--color-accent-soft);
+  border-color: var(--color-accent);
+  color: var(--color-accent);
+}
+
+.crop-overlay__numeric {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+.crop-overlay__numeric-input {
+  width: 72px;
+  height: 32px;
+  padding: 0 8px;
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--radius-xs);
+  background: var(--color-bg-base);
+  color: var(--color-fg-default);
+  font-family: var(--font-mono);
+  font-size: var(--text-caption);
+  text-align: right;
+}
+.crop-overlay__numeric-input:focus-visible {
+  outline: none;
+  border-color: var(--color-fg-default);
+  box-shadow: var(--shadow-focus);
+}
+.crop-overlay__numeric-sep {
+  font-family: var(--font-mono);
+  color: var(--color-fg-subtle);
+  font-size: var(--text-caption);
+}
+
+.crop-overlay__actions {
+  display: flex;
+  gap: 6px;
+  margin-left: 4px;
+}
+
+@media (max-width: 640px) {
+  .crop-overlay__bar {
+    left: 8px;
+    right: 8px;
+    bottom: 8px;
+    transform: none;
+    max-width: none;
+    justify-content: center;
+  }
+}

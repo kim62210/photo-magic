@@ -186,6 +186,35 @@
   overflow: auto;
 }
 
+.editor__canvas-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  max-width: min(100%, 78vh);
+}
+
+.editor__canvas-transform {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  transition: transform var(--motion-fast) var(--ease-out);
+  will-change: transform;
+}
+
+.editor__recovery {
+  padding: 12px 16px 0;
+}
+
+.editor__panel-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
 .editor__ratio-bar {
   display: flex;
   justify-content: center;

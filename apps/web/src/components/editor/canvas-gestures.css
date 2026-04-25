@@ -1,0 +1,23 @@
+/**
+ * CanvasGestures — transparent overlay that captures pointer/touch events.
+ * touch-action: none prevents iOS Safari page zoom + pull-to-refresh while
+ * the user is interacting with the canvas.
+ */
+
+.canvas-gestures {
+  position: absolute;
+  inset: 0;
+  z-index: var(--z-canvas);
+  touch-action: none;
+  -webkit-user-select: none;
+  user-select: none;
+  cursor: grab;
+}
+
+.canvas-gestures[data-active='true'] {
+  cursor: grabbing;
+}
+
+.canvas-gestures[data-disabled='true'] {
+  pointer-events: none;
+}
