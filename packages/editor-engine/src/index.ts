@@ -17,3 +17,5 @@ export * from './analytics';
 export * from './face/landmarks';
 export * from './face/beauty-renderer';
 export type * from './face/skin-mask';
+export * from './safety/nsfw-stub';
+export * from './safety/c2pa-stub';
