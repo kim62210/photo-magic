@@ -5,9 +5,9 @@ import {
   deleteCustomPreset,
   listCustomPresets,
   saveCustomPreset,
-  type AdjustmentValues,
   type CustomPreset,
 } from '@photo-magic/editor-engine';
+import type { AdjustmentValues } from '@photo-magic/shared-types';
 import { Button, Input, Modal, useToast } from '@photo-magic/ui';
 import './custom-preset.css';
 

@@ -300,6 +300,36 @@
   background: var(--color-bg-subtle);
   z-index: 1;
 }
+
+.editor__tabs--scroll {
+  overflow-x: auto;
+  scrollbar-width: thin;
+  -webkit-overflow-scrolling: touch;
+  flex-wrap: nowrap;
+}
+.editor__tabs--scroll::-webkit-scrollbar {
+  height: 4px;
+}
+.editor__tabs--scroll::-webkit-scrollbar-thumb {
+  background: var(--color-border-default);
+  border-radius: 2px;
+}
+
+.editor__canvas-meta {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  max-width: 320px;
+  padding: 4px 0;
+}
+
+.editor__tabs--scroll .editor__tab {
+  flex: 0 0 auto;
+  white-space: nowrap;
+  padding: 14px 14px;
+}
+
 .editor__tab {
   flex: 1;
   padding: 14px 12px;
