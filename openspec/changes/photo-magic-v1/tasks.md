@@ -16,12 +16,12 @@
 - [x] 1.6 `apps/api` FastAPI + pyproject.toml + uv/pip 환경 (CLAUDE.md python-fastapi 규칙 준수)
 - [x] 1.7 `packages/shared-types` 초안 (빈 패키지, export 구조만)
 - [x] 1.8 `packages/editor-engine`, `packages/ai-client`, `packages/ui` 스캐폴드 + package.json export
-- [ ] 1.9 GitHub 레포 생성(private), main 브랜치 보호, PR 템플릿
-- [ ] 1.10 GitHub Actions CI: `lint`, `typecheck`, `test`, `build` 매 PR
+- [x] 1.9 GitHub 레포 생성(private), main 브랜치 보호, PR 템플릿
+- [x] 1.10 GitHub Actions CI: `lint`, `typecheck`, `test`, `build` 매 PR
 - [x] 1.11 `docker-compose.dev.yml`: Postgres 16, Redis 7, MinIO(S3 호환), imgproxy
 - [x] 1.12 `.env.example` 파일 및 `env.ts` (web) / `settings.py` (api, pydantic-settings) 기본
-- [ ] 1.13 Sentry 프로젝트 생성, web/api 두 개 DSN 환경변수
-- [ ] 1.14 Drizzle ORM 설정 (`drizzle.config.ts`), 첫 스키마(users, sessions 최소) + 첫 마이그레이션 드라이런
+- [x] 1.13 Sentry 프로젝트 생성, web/api 두 개 DSN 환경변수
+- [x] 1.14 Drizzle ORM 설정 (`drizzle.config.ts`), 첫 스키마(users, sessions 최소) + 첫 마이그레이션 드라이런
 - [x] 1.15 SQLAlchemy async + Alembic 설정 (api는 읽기/쓰기 분리 설계), 연결 풀 설정
 - [x] 1.16 README 초안: 프로젝트 소개, dev 환경 구동법, 아키텍처 다이어그램 링크
 - [x] 1.17 `.gitignore` (node_modules, .next, .turbo, __pycache__, .venv, .env, logs, tmp, .DS_Store, *.log)
@@ -34,38 +34,38 @@
 - [x] 2.1 `packages/editor-engine` 의존성 세팅 (`konva`, `react-konva`, `zustand`)
 - [x] 2.2 이미지 업로드 UI (드래그 & 드롭 + 클릭 선택 + 모바일 카메라)
 - [x] 2.3 파일 검증: 포맷(JPEG/PNG/WebP/HEIC) · 크기 ≤ 25MB · 해상도 ≤ 8192² (spec Image Upload Format and Size Validation)
-- [ ] 2.4 HEIC → JPEG WASM 디코더 통합 (`heic2any` 또는 `libheif-js`)
-- [ ] 2.5 IndexedDB 로컬 자동 저장 (`idb-keyval` 또는 `dexie`, 세션 ID별)
+- [x] 2.4 HEIC → JPEG WASM 디코더 통합 (`heic2any` 또는 `libheif-js`)
+- [x] 2.5 IndexedDB 로컬 자동 저장 (`idb-keyval` 또는 `dexie`, 세션 ID별)
 - [x] 2.6 Konva Stage 초기화, WebGL2 / Canvas 2D 폴백 감지 + UI 배지
 - [x] 2.7 레이어 모델 (Background/Adjustment/Beauty/Annotation/Guide) — TypeScript 타입 정의 + zustand store
-- [ ] 2.8 크롭 툴 (자유/비율 고정/숫자 입력)
+- [x] 2.8 크롭 툴 (자유/비율 고정/숫자 입력)
 - [x] 2.9 회전 툴 (90° 단위 + 임의 각도 슬라이더 -45° ~ +45°)
-- [ ] 2.10 리사이즈 툴 (픽셀 직접 입력 + 비율 유지 토글)
+- [x] 2.10 리사이즈 툴 (픽셀 직접 입력 + 비율 유지 토글)
 - [x] 2.11 히스토리 스택 (Undo/Redo, 최대 50 스텝, 메모리 예산 관리)
 - [x] 2.12 키보드 단축키 (Ctrl+Z/Shift+Z/Ctrl+S/Esc/Enter) 핸들러
-- [ ] 2.13 모바일 핀치 줌 & 드래그 패닝 제스처 (Konva 기본 + 커스텀 튜닝)
-- [ ] 2.14 세션 복구 UI (탭 닫았다가 재접속 시 "이전 작업 이어서?" 배너)
+- [x] 2.13 모바일 핀치 줌 & 드래그 패닝 제스처 (Konva 기본 + 커스텀 튜닝)
+- [x] 2.14 세션 복구 UI (탭 닫았다가 재접속 시 "이전 작업 이어서?" 배너)
 - [ ] 2.15 브라우저 환경 테스트 매트릭스 문서 (Chrome/Safari/Firefox 최신 2 버전 + iOS/Android)
-- [ ] 2.16 W2 단위 테스트: upload validation, layer store, history reducer
+- [x] 2.16 W2 단위 테스트: upload validation, layer store, history reducer
 - [ ] 2.17 W2 E2E: 업로드 → 크롭 → 회전 → Undo → 저장 골든 경로 (Playwright)
 - [ ] 2.18 W2 데모: 실 이미지로 전체 편집 사이클 구동
 
 ## 3. 필터 · 프리셋 🎯 M1-W3 📋 filters-and-presets
 
-- [ ] 3.1 WebGL2 셰이더 런타임 구성 (twgl.js 또는 regl, 초기 컨텍스트 + 리소스 관리)
-- [ ] 3.2 LUT 3D 텍스처 로더 (`.cube` 또는 PNG LUT 이미지 → WebGL2 3D texture)
-- [ ] 3.3 `packages/editor-engine/filters/lut-shader.ts` 필름 에뮬레이션 셰이더
-- [ ] 3.4 색 조정 셰이더: 밝기/대비/채도/온도/틴트/하이라이트/섀도우/선명도
-- [ ] 3.5 필름 그레인 오버레이 셰이더 (Simplex noise, intensity 슬라이더)
-- [ ] 3.6 비네팅 + 라이트 리크 효과
+- [x] 3.1 WebGL2 셰이더 런타임 구성 (twgl.js 또는 regl, 초기 컨텍스트 + 리소스 관리)
+- [x] 3.2 LUT 3D 텍스처 로더 (`.cube` 또는 PNG LUT 이미지 → WebGL2 3D texture)
+- [x] 3.3 `packages/editor-engine/filters/lut-shader.ts` 필름 에뮬레이션 셰이더
+- [x] 3.4 색 조정 셰이더: 밝기/대비/채도/온도/틴트/하이라이트/섀도우/선명도
+- [x] 3.5 필름 그레인 오버레이 셰이더 (Simplex noise, intensity 슬라이더)
+- [x] 3.6 비네팅 + 라이트 리크 효과
 - [x] 3.7 프리셋 데이터 스키마 (`packages/shared-types/preset.ts` — name, koreanSubtitle, lutFile, adjustments, tier)
 - [x] 3.8 초기 20개 필름 프리셋 LUT 파일 + 메타 작성 (research/06 기반 FILM 01~FILM 08 + 카페 + 푸드 + 셀피 + 여행 + 계절)
 - [x] 3.9 프리셋 그리드 UI (썸네일 + 한국어 서브타이틀, 스크롤 성능 최적화)
 - [x] 3.10 프리셋 강도 슬라이더 (0-100%)
 - [ ] 3.11 커스텀 프리셋 저장/불러오기 (로그인 필요 시점부터, M1에선 로컬 IndexedDB)
-- [ ] 3.12 "원클릭 자동 보정" 버튼 홈 화면 중앙 고정 (research/06의 "3초 내 결과" UX)
-- [ ] 3.13 자동 보정 알고리즘 — 히스토그램 이퀄라이징 + 스킨톤 디텍션 기반 노출 보정
-- [ ] 3.14 필터 적용 전/후 비교 토글 (길게 누르기 = before 미리보기)
+- [x] 3.12 "원클릭 자동 보정" 버튼 홈 화면 중앙 고정 (research/06의 "3초 내 결과" UX)
+- [x] 3.13 자동 보정 알고리즘 — 히스토그램 이퀄라이징 + 스킨톤 디텍션 기반 노출 보정
+- [x] 3.14 필터 적용 전/후 비교 토글 (길게 누르기 = before 미리보기)
 - [ ] 3.15 성능 테스트: iPhone 12급에서 LUT + 조정 동시 적용 30fps 유지 검증
 - [ ] 3.16 W3 데모: 20개 프리셋 동작 + 원클릭 보정
 
@@ -73,11 +73,11 @@
 
 - [x] 4.1 5개 비율 프리셋 정의 (`packages/shared-types/platform.ts`): 4:5 인스타 / 9:16 스토리 / 1:1 쓰레드 / 16:9 X / 3:4 프린트
 - [x] 4.2 플랫폼별 해상도 가이드 (인스타 1080×1350, 스토리 1080×1920 등) + 검증 로직
-- [ ] 4.3 안전영역 오버레이 렌더러 (Guide Layer, 스토리 상/하단 250px 등)
+- [x] 4.3 안전영역 오버레이 렌더러 (Guide Layer, 스토리 상/하단 250px 등)
 - [ ] 4.4 자동 크롭 보조 (얼굴 중심 자동 정렬 옵션, MediaPipe 없이 saliency heuristic)
 - [ ] 4.5 플랫폼 프리셋 전환 시 안내 토스트 ("이 비율은 인스타 피드용입니다")
-- [ ] 4.6 내보내기 모달: 포맷(JPEG/PNG/WebP), 품질 슬라이더, 해상도 옵션
-- [ ] 4.7 여러 비율 일괄 내보내기 (하나 편집 → 5개 파일 zip 다운로드)
+- [x] 4.6 내보내기 모달: 포맷(JPEG/PNG/WebP), 품질 슬라이더, 해상도 옵션
+- [x] 4.7 여러 비율 일괄 내보내기 (하나 편집 → 5개 파일 zip 다운로드)
 - [ ] 4.8 OffscreenCanvas + Web Worker로 최종 렌더 파이프라인 (메인 스레드 블록 방지)
 - [ ] 4.9 JPEG 인코더 품질 프로파일 (90/95 기본, Pro+는 95/무손실)
 - [ ] 4.10 내보내기 진행률 표시 (대용량 이미지 처리 시)
