@@ -74,13 +74,13 @@
 - [x] 4.1 5개 비율 프리셋 정의 (`packages/shared-types/platform.ts`): 4:5 인스타 / 9:16 스토리 / 1:1 쓰레드 / 16:9 X / 3:4 프린트
 - [x] 4.2 플랫폼별 해상도 가이드 (인스타 1080×1350, 스토리 1080×1920 등) + 검증 로직
 - [x] 4.3 안전영역 오버레이 렌더러 (Guide Layer, 스토리 상/하단 250px 등)
-- [ ] 4.4 자동 크롭 보조 (얼굴 중심 자동 정렬 옵션, MediaPipe 없이 saliency heuristic)
-- [ ] 4.5 플랫폼 프리셋 전환 시 안내 토스트 ("이 비율은 인스타 피드용입니다")
+- [x] 4.4 자동 크롭 보조 (얼굴 중심 자동 정렬 옵션, MediaPipe 없이 saliency heuristic)
+- [x] 4.5 플랫폼 프리셋 전환 시 안내 토스트 ("이 비율은 인스타 피드용입니다")
 - [x] 4.6 내보내기 모달: 포맷(JPEG/PNG/WebP), 품질 슬라이더, 해상도 옵션
 - [x] 4.7 여러 비율 일괄 내보내기 (하나 편집 → 5개 파일 zip 다운로드)
 - [ ] 4.8 OffscreenCanvas + Web Worker로 최종 렌더 파이프라인 (메인 스레드 블록 방지)
 - [ ] 4.9 JPEG 인코더 품질 프로파일 (90/95 기본, Pro+는 95/무손실)
-- [ ] 4.10 내보내기 진행률 표시 (대용량 이미지 처리 시)
+- [x] 4.10 내보내기 진행률 표시 (대용량 이미지 처리 시)
 - [ ] 4.11 다운로드 후 "다시 편집" / "새로 편집" / "공유" 3 버튼
 - [ ] 4.12 M1 QA 게이트: Must-Have 중 1-6번(기본 보정·크롭·비율·프리셋·그레인·내보내기) 동작 확인
 - [ ] 4.13 M1 성능 감사: Lighthouse LCP ≤ 2.5s (모바일 3G) 달성
@@ -99,27 +99,27 @@
 - [ ] 5.7 스티커 드래그·리사이즈·회전·플립 컨트롤 (Konva Transformer)
 - [ ] 5.8 콜라주 템플릿 10종 (2분할×2, 3분할×3, 4분할×3, 6분할×2) — 그리드 기반 데이터 구조
 - [ ] 5.9 콜라주 모드 진입 UI (홈 화면 별도 엔트리 포인트)
-- [ ] 5.10 콜라주 셀별 이미지 배치 + 드래그로 위치 조정 + 간격 조정
-- [ ] 5.11 레이어 패널 UI (순서 변경, 가시성, 잠금)
-- [ ] 5.12 텍스트·스티커 레이어 퍼포먼스 튜닝 (100개 이상 배치 시 가상 스크롤)
+- [x] 5.10 콜라주 셀별 이미지 배치 + 드래그로 위치 조정 + 간격 조정
+- [x] 5.11 레이어 패널 UI (순서 변경, 가시성, 잠금)
+- [x] 5.12 텍스트·스티커 레이어 퍼포먼스 튜닝 (100개 이상 배치 시 가상 스크롤)
 
 ## 6. 뷰티 필터 🎯 M2-W6 📋 beauty-filter
 
-- [ ] 6.1 `@mediapipe/tasks-vision` Face Landmarker 통합 (코드 스플리팅, 첫 진입 시 lazy)
-- [ ] 6.2 MediaPipe 모델 파일 CDN 서빙 + 로컬 캐시 (Service Worker)
-- [ ] 6.3 얼굴 감지 결과 → WebGL 유니폼 업로드 어댑터 (478 랜드마크)
-- [ ] 6.4 **클라이언트 전용 처리 보장** — 코드 리뷰 + E2E 네트워크 로그 검증 (얼굴 랜드마크 서버 전송 없음)
-- [ ] 6.5 스킨 스무딩 셰이더 (bilateral filter, 강도 0-70%)
-- [ ] 6.6 화이트닝 셰이더 (YCbCr luminance shift, 피부 마스크만)
-- [ ] 6.7 슬리밍 셰이더 (mesh warp, 얼굴 윤곽 8개 제어점, 최대 5% 변형)
+- [x] 6.1 `@mediapipe/tasks-vision` Face Landmarker 통합 (코드 스플리팅, 첫 진입 시 lazy)
+- [x] 6.2 MediaPipe 모델 파일 CDN 서빙 + 로컬 캐시 (Service Worker)
+- [x] 6.3 얼굴 감지 결과 → WebGL 유니폼 업로드 어댑터 (478 랜드마크)
+- [x] 6.4 **클라이언트 전용 처리 보장** — 코드 리뷰 + E2E 네트워크 로그 검증 (얼굴 랜드마크 서버 전송 없음)
+- [x] 6.5 스킨 스무딩 셰이더 (bilateral filter, 강도 0-70%)
+- [x] 6.6 화이트닝 셰이더 (YCbCr luminance shift, 피부 마스크만)
+- [x] 6.7 슬리밍 셰이더 (mesh warp, 얼굴 윤곽 8개 제어점, 최대 5% 변형)
 - [ ] 6.8 아이 하이라이트 (눈 영역 brightness boost)
-- [ ] 6.9 뷰티 UI: 4개 슬라이더 + 기본값 50% + 최대 70% 제한
-- [ ] 6.10 **16세 미만 계정 강제 제한** (최대 30%, auth 연동 필요 — M3 W10 완성 후 재연결 가능)
-- [ ] 6.11 얼굴 감지 실패 시 폴백 ("얼굴이 감지되지 않았습니다. 수동으로 보정을 적용할까요?")
-- [ ] 6.12 여러 얼굴 감지 시 자동 모두 적용 + "선택 얼굴만" 옵션
-- [ ] 6.13 성능: 1080p 30fps @ iPhone 12, 모바일 GPU delegate 강제
-- [ ] 6.14 Before/After 비교 토글
-- [ ] 6.15 "자연스러움 프리뷰" 토글 (전환 전환 테스트 중심)
+- [x] 6.9 뷰티 UI: 4개 슬라이더 + 기본값 50% + 최대 70% 제한
+- [x] 6.10 **16세 미만 계정 강제 제한** (최대 30%, auth 연동 필요 — M3 W10 완성 후 재연결 가능)
+- [x] 6.11 얼굴 감지 실패 시 폴백 ("얼굴이 감지되지 않았습니다. 수동으로 보정을 적용할까요?")
+- [x] 6.12 여러 얼굴 감지 시 자동 모두 적용 + "선택 얼굴만" 옵션
+- [x] 6.13 성능: 1080p 30fps @ iPhone 12, 모바일 GPU delegate 강제
+- [x] 6.14 Before/After 비교 토글
+- [x] 6.15 "자연스러움 프리뷰" 토글 (전환 전환 테스트 중심)
 
 ## 7. AI 파이프라인 기반 🎯 M2-W7 📋 ai-enhancement
 
@@ -170,65 +170,65 @@
 
 ## 10. 인증 · 구독 · 결제 🎯 M3-W10 📋 auth-and-subscription
 
-- [ ] 10.1 NextAuth v5 (Auth.js) 설정 — 이메일·Google OAuth·Apple Sign in
-- [ ] 10.2 사용자 DB 스키마 (`users`, `sessions`, `consents`) 마이그레이션
-- [ ] 10.3 회원가입 플로우 + 이메일 인증 (Resend 또는 SES)
-- [ ] 10.4 로그인/로그아웃 UI + 세션 persisted (JWT 30일 refresh)
-- [ ] 10.5 **생년월일 수집 + 연령 게이트**: 14세 미만 법정대리인 플로우, 16세 미만 뷰티 강도 제한 플래그
-- [ ] 10.6 14세 미만 법정대리인 동의 UI (본인인증 + 동의서 파일 업로드 또는 카드 인증)
-- [ ] 10.7 플랜 DB 스키마 + 3단 구독 설정 (`subscriptions`, `plans`)
-- [ ] 10.8 토스페이먼츠 결제 모듈 연동 (카드·카카오페이·토스·계좌)
-- [ ] 10.9 결제 웹훅 핸들러 (구독 성공/실패/해지 상태 동기화)
-- [ ] 10.10 구독 관리 페이지 (플랜 업그레이드/다운그레이드/해지)
-- [ ] 10.11 사용량 대시보드 (AI 쿼터, SNS 업로드 수, 편집 수)
-- [ ] 10.12 청구서·영수증 발행 (PDF 생성, 이메일 전송)
-- [ ] 10.13 플랜별 feature flag 프론트 연결 (쿼터/해상도 제한 UI 반영)
-- [ ] 10.14 계정 삭제 UI + 백엔드 cascade 삭제 (GDPR Art. 17)
-- [ ] 10.15 auth 통합 테스트 (Playwright: 가입 → 구독 → 해지 흐름)
+- [x] 10.1 NextAuth v5 (Auth.js) 설정 — 이메일·Google OAuth·Apple Sign in
+- [x] 10.2 사용자 DB 스키마 (`users`, `sessions`, `consents`) 마이그레이션
+- [x] 10.3 회원가입 플로우 + 이메일 인증 (Resend 또는 SES)
+- [x] 10.4 로그인/로그아웃 UI + 세션 persisted (JWT 30일 refresh)
+- [x] 10.5 **생년월일 수집 + 연령 게이트**: 14세 미만 법정대리인 플로우, 16세 미만 뷰티 강도 제한 플래그
+- [x] 10.6 14세 미만 법정대리인 동의 UI (본인인증 + 동의서 파일 업로드 또는 카드 인증)
+- [x] 10.7 플랜 DB 스키마 + 3단 구독 설정 (`subscriptions`, `plans`)
+- [x] 10.8 토스페이먼츠 결제 모듈 연동 (카드·카카오페이·토스·계좌)
+- [x] 10.9 결제 웹훅 핸들러 (구독 성공/실패/해지 상태 동기화)
+- [x] 10.10 구독 관리 페이지 (플랜 업그레이드/다운그레이드/해지)
+- [x] 10.11 사용량 대시보드 (AI 쿼터, SNS 업로드 수, 편집 수)
+- [x] 10.12 청구서·영수증 발행 (PDF 생성, 이메일 전송)
+- [x] 10.13 플랜별 feature flag 프론트 연결 (쿼터/해상도 제한 UI 반영)
+- [x] 10.14 계정 삭제 UI + 백엔드 cascade 삭제 (GDPR Art. 17)
+- [x] 10.15 auth 통합 테스트 (Playwright: 가입 → 구독 → 해지 흐름)
 
 ## 11. SNS 업로드 🎯 M3-W11 📋 sns-upload
 
-- [ ] 11.1 **Phase 0**: Web Share API Level 2 (files) 업로드 버튼 — 모바일 Chrome/Safari
-- [ ] 11.2 **Phase 0**: iOS URL Scheme `instagram-stories://share?backgroundImage=...` 스토리 공유
-- [ ] 11.3 **Phase 0**: Android Intent 공유 (`com.instagram.android/.share.*`)
-- [ ] 11.4 **Phase 0**: 다운로드 버튼 (항상 동작)
-- [ ] 11.5 플랫폼 업로드 추상화 인터페이스 (`PlatformUploader`) + 팩토리 패턴
+- [x] 11.1 **Phase 0**: Web Share API Level 2 (files) 업로드 버튼 — 모바일 Chrome/Safari
+- [x] 11.2 **Phase 0**: iOS URL Scheme `instagram-stories://share?backgroundImage=...` 스토리 공유
+- [x] 11.3 **Phase 0**: Android Intent 공유 (`com.instagram.android/.share.*`)
+- [x] 11.4 **Phase 0**: 다운로드 버튼 (항상 동작)
+- [x] 11.5 플랫폼 업로드 추상화 인터페이스 (`PlatformUploader`) + 팩토리 패턴
 - [ ] 11.6 **Meta 개발자 앱 등록 + Threads Product 활성화** (M3 W10 끝에 이미 제출 권장)
-- [ ] 11.7 Threads OAuth 2.0 플로우 (redirect → callback → token exchange)
+- [x] 11.7 Threads OAuth 2.0 플로우 (redirect → callback → token exchange)
 - [ ] 11.8 토큰 암호화 저장: AES-256-GCM + envelope key, `upload_tokens` 테이블
 - [ ] 11.9 Threads API: `createMediaContainer` → `publishMedia` 구현
-- [ ] 11.10 Threads 업로드 전 이미지 규격 검증 (JPEG only, 해상도 한도, 20장 캐러셀 제한)
-- [ ] 11.11 업로드 진행률 UI (프론트에서 SSE로 받음)
-- [ ] 11.12 업로드 실패 에러 핸들링 + 재시도 (지수 백오프, 최대 3회)
-- [ ] 11.13 업로드 완료 후 Threads 포스트 URL 표시 + "열기" 버튼
-- [ ] 11.14 **X API 배제** 안내 배너 ("X는 유료 API로 전환되어 직접 업로드 미지원, 공유 버튼 이용")
-- [ ] 11.15 Instagram Graph App Review 제출 준비 (스크린샷·권한 사용 사유서) — 통과는 포스트 런칭
-- [ ] 11.16 SNS 업로드 일일 쿼터 집계 (무료 5, Pro 50, Pro+ 무제한)
-- [ ] 11.17 OAuth 토큰 만료 감지 + 자동 refresh 또는 재인증 유도
+- [x] 11.10 Threads 업로드 전 이미지 규격 검증 (JPEG only, 해상도 한도, 20장 캐러셀 제한)
+- [x] 11.11 업로드 진행률 UI (프론트에서 SSE로 받음)
+- [x] 11.12 업로드 실패 에러 핸들링 + 재시도 (지수 백오프, 최대 3회)
+- [x] 11.13 업로드 완료 후 Threads 포스트 URL 표시 + "열기" 버튼
+- [x] 11.14 **X API 배제** 안내 배너 ("X는 유료 API로 전환되어 직접 업로드 미지원, 공유 버튼 이용")
+- [x] 11.15 Instagram Graph App Review 제출 준비 (스크린샷·권한 사용 사유서) — 통과는 포스트 런칭
+- [x] 11.16 SNS 업로드 일일 쿼터 집계 (무료 5, Pro 50, Pro+ 무제한)
+- [x] 11.17 OAuth 토큰 만료 감지 + 자동 refresh 또는 재인증 유도
 
 ## 12. 개인정보 · 컴플라이언스 · 보안 🎯 M3-W12 📋 privacy-compliance
 
-- [ ] 12.1 이용약관 한국어/영어 작성 (법무 검토 의뢰 포함)
-- [ ] 12.2 개인정보처리방침 한국어/영어 (한국 개인정보보호법 + GDPR 체크리스트)
-- [ ] 12.3 **DPIA(Data Protection Impact Assessment)** 문서화 (얼굴 처리 흐름, 미성년자 보호)
-- [ ] 12.4 약관·정책 버전 관리 + 변경 시 재동의 플로우
-- [ ] 12.5 쿠키 배너 (EU 대상, GDPR — 필수/통계/마케팅 분리)
+- [x] 12.1 이용약관 한국어/영어 작성 (법무 검토 의뢰 포함)
+- [x] 12.2 개인정보처리방침 한국어/영어 (한국 개인정보보호법 + GDPR 체크리스트)
+- [x] 12.3 **DPIA(Data Protection Impact Assessment)** 문서화 (얼굴 처리 흐름, 미성년자 보호)
+- [x] 12.4 약관·정책 버전 관리 + 변경 시 재동의 플로우
+- [x] 12.5 쿠키 배너 (EU 대상, GDPR — 필수/통계/마케팅 분리)
 - [ ] 12.6 C2PA 매니페스트 삽입 — AI 편집 결과에 `c2pa-js` 또는 `c2pa-rust` WASM로 서명
 - [ ] 12.7 C2PA 매니페스트 필드: "Generated/Edited by photo-magic", AI 모델 목록, 타임스탬프
 - [ ] 12.8 "AI 편집" UI 배지 (내보내기 결과물에 시각 오버레이, 사용자 토글 불가 — 한국 AI기본법 대응)
 - [ ] 12.9 워터마크 옵션 (Pro+는 끄기 가능하되 C2PA는 항상 유지)
-- [ ] 12.10 신고 기능 UI (이미지 우클릭/길게 누르기 → 신고 모달)
-- [ ] 12.11 신고 처리 백엔드 (admin dashboard, 24시간 삭제 SLA 카운터)
-- [ ] 12.12 관리자 전용 대시보드 (신고 큐, NSFW 탐지 로그, 삭제 승인/거절)
-- [ ] 12.13 데이터 내보내기 (GDPR Art. 15) API + 프론트 ("내 데이터 다운로드")
-- [ ] 12.14 데이터 삭제 요청 (GDPR Art. 17) API + UI ("계정 영구 삭제")
-- [ ] 12.15 감사 로그(`audit_log`) 삽입 — 민감 작업(로그인, 결제, 동의, 삭제 등)
-- [ ] 12.16 S3/R2 SSE-KMS 암호화 확인 (버킷 기본 설정)
-- [ ] 12.17 비밀번호 해시 argon2 (CLAUDE.md 규칙), 로그인 시도 rate limit
-- [ ] 12.18 CORS 명시적 origin 설정 (production `*` 금지)
-- [ ] 12.19 production `/docs`, `/redoc` 비활성화 (FastAPI)
-- [ ] 12.20 보안 헤더 (CSP, HSTS, X-Frame-Options, X-Content-Type-Options)
-- [ ] 12.21 국외 이전 고지 문구 (한국법) + 적정성 결정 EU
+- [x] 12.10 신고 기능 UI (이미지 우클릭/길게 누르기 → 신고 모달)
+- [x] 12.11 신고 처리 백엔드 (admin dashboard, 24시간 삭제 SLA 카운터)
+- [x] 12.12 관리자 전용 대시보드 (신고 큐, NSFW 탐지 로그, 삭제 승인/거절)
+- [x] 12.13 데이터 내보내기 (GDPR Art. 15) API + 프론트 ("내 데이터 다운로드")
+- [x] 12.14 데이터 삭제 요청 (GDPR Art. 17) API + UI ("계정 영구 삭제")
+- [x] 12.15 감사 로그(`audit_log`) 삽입 — 민감 작업(로그인, 결제, 동의, 삭제 등)
+- [x] 12.16 S3/R2 SSE-KMS 암호화 확인 (버킷 기본 설정)
+- [x] 12.17 비밀번호 해시 argon2 (CLAUDE.md 규칙), 로그인 시도 rate limit
+- [x] 12.18 CORS 명시적 origin 설정 (production `*` 금지)
+- [x] 12.19 production `/docs`, `/redoc` 비활성화 (FastAPI)
+- [x] 12.20 보안 헤더 (CSP, HSTS, X-Frame-Options, X-Content-Type-Options)
+- [x] 12.21 국외 이전 고지 문구 (한국법) + 적정성 결정 EU
 
 ## 13. 성능 · QA · 런칭 🎯 M3-W13 📋 전부
 
