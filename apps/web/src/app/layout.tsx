@@ -3,6 +3,7 @@ import type { ReactNode } from 'react';
 import './globals.css';
 import { ToastProvider } from '@photo-magic/ui';
 import { FilmGrain } from '@photo-magic/ui';
+import { CookieBanner } from '../components/legal/CookieBanner';
 
 export const metadata: Metadata = {
   title: 'photo-magic — 필름 감성 사진 편집',
@@ -80,6 +81,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
           />
           {children}
           <FilmGrain opacity={0.04} />
+          <CookieBanner />
         </ToastProvider>
       </body>
     </html>

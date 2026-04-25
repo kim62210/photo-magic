@@ -11,3 +11,5 @@ export * from './persist';
 export * from './auto-correct';
 export * from './webgl/renderer';
 export { hasWebGL2 } from './webgl/context';
+export * from './safety/nsfw-stub';
+export * from './safety/c2pa-stub';
