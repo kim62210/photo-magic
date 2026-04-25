@@ -1,0 +1,141 @@
+.curves {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 16px;
+  background: var(--color-bg-base);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-sm);
+}
+
+.curves__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.curves__eyebrow {
+  font-family: var(--font-mono);
+  font-size: var(--text-overline);
+  font-weight: 600;
+  letter-spacing: var(--tracking-overline);
+  text-transform: uppercase;
+  color: var(--color-fg-muted);
+}
+
+.curves__actions {
+  display: flex;
+  gap: 8px;
+}
+
+.curves__reset-channel,
+.curves__reset-all {
+  font-family: var(--font-body);
+  font-size: var(--text-caption);
+  background: transparent;
+  border: 1px solid var(--color-border-default);
+  color: var(--color-fg-muted);
+  padding: 6px 10px;
+  border-radius: var(--radius-xs);
+  cursor: pointer;
+  transition: background var(--motion-fast) var(--ease-out);
+}
+.curves__reset-channel:hover:not(:disabled),
+.curves__reset-all:hover {
+  background: var(--color-bg-subtle);
+  color: var(--color-fg-default);
+}
+.curves__reset-channel:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.curves__tabs {
+  display: flex;
+  gap: 4px;
+  border-bottom: 1px solid var(--color-border-subtle);
+}
+.curves__tab {
+  font-family: var(--font-body);
+  font-size: var(--text-body-sm);
+  font-weight: 500;
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  color: var(--color-fg-muted);
+  padding: 8px 12px;
+  cursor: pointer;
+  transition: color var(--motion-fast) var(--ease-out), border-color var(--motion-fast) var(--ease-out);
+}
+.curves__tab:hover { color: var(--color-fg-default); }
+.curves__tab.is-active {
+  color: var(--color-fg-default);
+  border-bottom-color: var(--color-fg-default);
+}
+.curves__tab--r.is-active { border-bottom-color: var(--rust-500); color: var(--rust-700); }
+.curves__tab--g.is-active { border-bottom-color: var(--moss-500); color: var(--moss-700); }
+.curves__tab--b.is-active { border-bottom-color: var(--state-info); color: var(--state-info); }
+
+.curves__canvas-wrap {
+  position: relative;
+  width: 280px;
+  height: 280px;
+  align-self: center;
+  background: var(--color-bg-subtle);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-xs);
+  overflow: hidden;
+}
+.curves__canvas-wrap .histogram--backdrop { z-index: 0; }
+.curves__canvas {
+  position: relative;
+  z-index: 1;
+  display: block;
+  cursor: crosshair;
+  touch-action: none;
+}
+
+.curves__grid {
+  stroke: var(--color-border-subtle);
+  stroke-width: 1;
+  stroke-dasharray: 2 4;
+  opacity: 0.7;
+}
+.curves__identity {
+  stroke: var(--color-border-default);
+  stroke-width: 1;
+  stroke-dasharray: 4 4;
+  opacity: 0.5;
+}
+.curves__path {
+  fill: none;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.curves__path--master { stroke: var(--color-fg-default); }
+.curves__path--r { stroke: var(--rust-500); }
+.curves__path--g { stroke: var(--moss-500); }
+.curves__path--b { stroke: var(--state-info); }
+.curves__path--l { stroke: var(--cream-700); }
+
+.curves__point {
+  fill: var(--color-bg-base);
+  stroke: var(--color-fg-default);
+  stroke-width: 2;
+  cursor: grab;
+}
+.curves__point:active { cursor: grabbing; fill: var(--color-accent-soft); }
+
+.curves[data-channel="r"] .curves__point { stroke: var(--rust-500); }
+.curves[data-channel="g"] .curves__point { stroke: var(--moss-500); }
+.curves[data-channel="b"] .curves__point { stroke: var(--state-info); }
+
+.curves__hint {
+  font-family: var(--font-body);
+  font-size: var(--text-caption);
+  color: var(--color-fg-subtle);
+  text-align: center;
+  margin: 0;
+}

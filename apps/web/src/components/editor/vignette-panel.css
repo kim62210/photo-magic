@@ -1,0 +1,92 @@
+.vignette-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 16px;
+  background: var(--color-bg-base);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-sm);
+}
+
+.vignette-panel__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.vignette-panel__eyebrow {
+  font-family: var(--font-mono);
+  font-size: var(--text-overline);
+  font-weight: 600;
+  letter-spacing: var(--tracking-overline);
+  text-transform: uppercase;
+  color: var(--color-fg-muted);
+}
+
+.vignette-panel__reset {
+  font-family: var(--font-body);
+  font-size: var(--text-caption);
+  background: transparent;
+  border: 1px solid var(--color-border-default);
+  color: var(--color-fg-muted);
+  padding: 6px 10px;
+  border-radius: var(--radius-xs);
+  cursor: pointer;
+}
+.vignette-panel__reset:hover:not(:disabled) {
+  background: var(--color-bg-subtle);
+  color: var(--color-fg-default);
+}
+.vignette-panel__reset:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.vignette-panel__section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--color-border-subtle);
+}
+
+.vignette-panel__title {
+  font-family: var(--font-display);
+  font-size: var(--text-body);
+  font-weight: 500;
+  margin: 0;
+  color: var(--color-fg-default);
+}
+
+.vignette-panel__color,
+.vignette-panel__select {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  font-family: var(--font-body);
+  font-size: var(--text-body-sm);
+  color: var(--color-fg-default);
+}
+
+.vignette-panel__color input[type='color'] {
+  width: 40px;
+  height: 28px;
+  padding: 0;
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--radius-xs);
+  background: transparent;
+  cursor: pointer;
+}
+
+.vignette-panel__select select {
+  flex: 1;
+  height: 32px;
+  padding: 0 8px;
+  font-family: inherit;
+  font-size: inherit;
+  background: var(--color-bg-base);
+  color: var(--color-fg-default);
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--radius-xs);
+}

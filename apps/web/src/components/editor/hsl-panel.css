@@ -1,0 +1,118 @@
+.hsl-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 16px;
+  background: var(--color-bg-base);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-sm);
+}
+
+.hsl-panel__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.hsl-panel__eyebrow {
+  font-family: var(--font-mono);
+  font-size: var(--text-overline);
+  font-weight: 600;
+  letter-spacing: var(--tracking-overline);
+  text-transform: uppercase;
+  color: var(--color-fg-muted);
+}
+
+.hsl-panel__actions {
+  display: flex;
+  gap: 8px;
+}
+
+.hsl-panel__reset {
+  font-family: var(--font-body);
+  font-size: var(--text-caption);
+  background: transparent;
+  border: 1px solid var(--color-border-default);
+  color: var(--color-fg-muted);
+  padding: 6px 10px;
+  border-radius: var(--radius-xs);
+  cursor: pointer;
+  transition: background var(--motion-fast) var(--ease-out);
+}
+.hsl-panel__reset:hover:not(:disabled) {
+  background: var(--color-bg-subtle);
+  color: var(--color-fg-default);
+}
+.hsl-panel__reset:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.hsl-panel__targets {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+
+.hsl-panel__target {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 6px;
+  background: transparent;
+  border: 1.5px solid transparent;
+  border-radius: var(--radius-xs);
+  cursor: pointer;
+  transition: border-color var(--motion-fast) var(--ease-out), background var(--motion-fast) var(--ease-out);
+}
+
+.hsl-panel__target:hover {
+  background: var(--color-bg-subtle);
+}
+
+.hsl-panel__target.is-active {
+  border-color: var(--color-fg-default);
+}
+
+.hsl-panel__swatch {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  box-shadow: inset 0 0 0 1px rgba(10, 9, 8, 0.2);
+}
+
+.hsl-panel__target-label {
+  font-family: var(--font-body);
+  font-size: var(--text-caption);
+  color: var(--color-fg-muted);
+}
+
+.hsl-panel__target.is-active .hsl-panel__target-label {
+  color: var(--color-fg-default);
+  font-weight: 500;
+}
+
+.hsl-panel__dot {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--color-accent);
+}
+
+.hsl-panel__sliders {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+@media (min-width: 480px) {
+  .hsl-panel__targets {
+    grid-template-columns: repeat(8, 1fr);
+  }
+}
