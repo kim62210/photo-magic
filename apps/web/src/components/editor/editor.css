@@ -44,6 +44,7 @@
   letter-spacing: -0.01em;
 }
 .editor__brand-accent { color: var(--color-accent); font-style: italic; }
+.editor__upgrade-link { text-decoration: none; }
 
 @media (min-width: 768px) {
   .editor__topbar {
