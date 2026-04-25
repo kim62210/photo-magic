@@ -1,4 +1,5 @@
 export * from './upload';
+export * from './upload-platforms';
 export * from './store';
 export * from './history';
 export * from './filters';

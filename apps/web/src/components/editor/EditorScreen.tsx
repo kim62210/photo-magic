@@ -50,6 +50,7 @@ import { SessionRecoveryBanner } from './SessionRecoveryBanner';
 import { BeforeAfterCompare } from './BeforeAfterCompare';
 import { ExportModal } from './ExportModal';
 import { BeautyPanel } from './BeautyPanel';
+import { ShareSheet } from './ShareSheet';
 import './editor.css';
 
 const ADJUST_KEYS: {
@@ -96,6 +97,7 @@ export function EditorScreen() {
   const [cropMode, setCropMode] = useState(false);
   const [showSafeZone, setShowSafeZone] = useState(true);
   const [exportOpen, setExportOpen] = useState(false);
+  const [shareOpen, setShareOpen] = useState(false);
   const [recoveredSession, setRecoveredSession] = useState<PersistedSession | null>(null);
   const [autoCorrectBusy, setAutoCorrectBusy] = useState(false);
   // ── Beauty filter state ──
@@ -360,6 +362,7 @@ export function EditorScreen() {
     <div className="editor">
       <TopBar
         onExport={() => setExportOpen(true)}
+        onShare={() => setShareOpen(true)}
         exporting={false}
         hasImage={!!image}
       />
@@ -625,6 +628,13 @@ export function EditorScreen() {
         canvas={canvasRef.current}
         currentRatio={ratio}
         presetLabel={currentPreset?.label}
+      />
+
+      <ShareSheet
+        open={shareOpen}
+        onClose={() => setShareOpen(false)}
+        canvas={canvasRef.current}
+        ratio={ratio}
       />
     </div>
   );
