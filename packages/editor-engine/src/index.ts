@@ -14,3 +14,6 @@ export { hasWebGL2 } from './webgl/context';
 export * from './custom-presets';
 export * from './saliency';
 export * from './analytics';
+export * from './face/landmarks';
+export * from './face/beauty-renderer';
+export type * from './face/skin-mask';

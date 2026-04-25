@@ -2,7 +2,9 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 import {
+  DEFAULT_BEAUTY,
   RATIO_PRESETS,
+  type BeautyValues,
   type PlatformRatio,
   type AdjustmentValues,
 } from '@photo-magic/shared-types';
@@ -14,13 +16,17 @@ import {
   downloadBlob,
   exportCanvas,
   FILM_PRESETS,
+  FaceLandmarker478,
+  GlBeautyRenderer,
   getPreset,
+  hasWebGL2,
   loadSession,
   useEditorStore,
   useSessionPersist,
   useZoomPan,
   validateImage,
   type CropRect,
+  type FaceLandmarkResult,
   type PersistedSession,
 } from '@photo-magic/editor-engine';
 import {
@@ -43,6 +49,7 @@ import { CanvasGestures } from './CanvasGestures';
 import { SessionRecoveryBanner } from './SessionRecoveryBanner';
 import { BeforeAfterCompare } from './BeforeAfterCompare';
 import { ExportModal } from './ExportModal';
+import { BeautyPanel } from './BeautyPanel';
 import './editor.css';
 
 const ADJUST_KEYS: {
@@ -62,7 +69,7 @@ const ADJUST_KEYS: {
   { key: 'grain', label: '그레인', min: 0, max: 100 },
 ];
 
-type Tab = 'preset' | 'adjust' | 'crop' | 'resize';
+type Tab = 'preset' | 'adjust' | 'beauty' | 'crop' | 'resize';
 
 export function EditorScreen() {
   const image = useEditorStore((s) => s.image);
@@ -91,6 +98,16 @@ export function EditorScreen() {
   const [exportOpen, setExportOpen] = useState(false);
   const [recoveredSession, setRecoveredSession] = useState<PersistedSession | null>(null);
   const [autoCorrectBusy, setAutoCorrectBusy] = useState(false);
+  // ── Beauty filter state ──
+  const [beautyValues, setBeautyValues] = useState<BeautyValues>({ ...DEFAULT_BEAUTY });
+  const [faceLandmarks, setFaceLandmarks] = useState<FaceLandmarkResult[]>([]);
+  const [beautyDetectionState, setBeautyDetectionState] = useState<
+    'idle' | 'detecting' | 'done' | 'failed'
+  >('idle');
+  const [beautyProcessing, setBeautyProcessing] = useState(false);
+  // 만 16세 미만 강제 cap — 인증 통합은 후속 worktree에서 처리, 현재는 false 고정
+  const ageCapped = false;
+  const beautyRendererRef = useRef<GlBeautyRenderer | null>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const canvasWrapRef = useRef<HTMLDivElement>(null);
   const imageElRef = useRef<HTMLImageElement | null>(null);
@@ -141,11 +158,40 @@ export function EditorScreen() {
       if (image?.url) URL.revokeObjectURL(image.url);
       setImage({ meta: result.meta, url });
       setRecoveredSession(null);
+      // 새 이미지마다 뷰티 상태 초기화
+      setFaceLandmarks([]);
+      setBeautyValues({ ...DEFAULT_BEAUTY });
+      setBeautyDetectionState('detecting');
       pushToast({
         tone: 'success',
         title: '이미지 불러오기 완료',
         description: `${result.meta.width}×${result.meta.height} · ${result.meta.format.toUpperCase()}`,
       });
+      // 비동기 얼굴 랜드마크 감지 — 클라이언트 전용. 서버 전송 없음.
+      void (async () => {
+        try {
+          const probe = new Image();
+          probe.decoding = 'async';
+          probe.src = url;
+          await probe.decode().catch(() => {
+            // decode가 실패해도 onload 폴백 시도
+            return new Promise<void>((resolve, reject) => {
+              probe.onload = () => resolve();
+              probe.onerror = () => reject(new Error('image decode failed'));
+            });
+          });
+          const detector = await FaceLandmarker478.load();
+          const faces = await detector.detect(probe);
+          setFaceLandmarks(faces);
+          setBeautyDetectionState('done');
+        } catch (err) {
+          setFaceLandmarks([]);
+          setBeautyDetectionState('failed');
+          // 실패해도 일반 편집은 계속 가능 — 토스트는 조용히
+          // eslint-disable-next-line no-console
+          console.warn('[face-landmarker] detection failed', err);
+        }
+      })();
     },
     [image, setImage, pushToast],
   );
@@ -248,6 +294,63 @@ export function EditorScreen() {
     },
     [pushToast],
   );
+
+  // ── Beauty filter apply ────────────────────────────────────
+  // GlBeautyRenderer로 캔버스에 다중 패스 셰이더를 적용한 뒤,
+  // 결과 픽셀을 현재 캔버스에 그려 넣는다. WebGL2 미지원 시 토스트로 안내.
+  const handleBeautyApply = useCallback(
+    async (values: BeautyValues) => {
+      const canvas = canvasRef.current;
+      if (!canvas) {
+        pushToast({ tone: 'warning', title: '캔버스가 준비되지 않았어요' });
+        return;
+      }
+      if (!hasWebGL2()) {
+        pushToast({
+          tone: 'warning',
+          title: 'WebGL2 미지원',
+          description: '이 디바이스에서는 뷰티 필터를 사용할 수 없어요.',
+        });
+        return;
+      }
+      if (faceLandmarks.length === 0) {
+        pushToast({ tone: 'warning', title: '얼굴이 감지되지 않았어요' });
+        return;
+      }
+      try {
+        setBeautyValues(values);
+        setBeautyProcessing(true);
+        if (!beautyRendererRef.current) {
+          beautyRendererRef.current = new GlBeautyRenderer();
+        }
+        const renderer = beautyRendererRef.current;
+        const out = await renderer.apply(canvas, faceLandmarks, values, ageCapped);
+        if (out !== canvas) {
+          const ctx = canvas.getContext('2d');
+          if (ctx) {
+            canvas.width = out.width;
+            canvas.height = out.height;
+            ctx.drawImage(out, 0, 0);
+          }
+        }
+        pushToast({ tone: 'success', title: '뷰티 필터 적용', description: '미리보기 갱신됨' });
+      } catch (err) {
+        const msg = err instanceof Error ? err.message : 'beauty apply failed';
+        pushToast({ tone: 'danger', title: '뷰티 적용 실패', description: msg });
+      } finally {
+        setBeautyProcessing(false);
+      }
+    },
+    [faceLandmarks, ageCapped, pushToast],
+  );
+
+  // 컴포넌트 언마운트 시 GL 자원 해제
+  useEffect(() => {
+    return () => {
+      beautyRendererRef.current?.dispose();
+      beautyRendererRef.current = null;
+    };
+  }, []);
 
   const filterCss = adjustmentsToCssFilter(adjustments);
 
@@ -390,6 +493,9 @@ export function EditorScreen() {
               <TabBtn active={tab === 'adjust'} onClick={() => setTab('adjust')}>
                 조정
               </TabBtn>
+              <TabBtn active={tab === 'beauty'} onClick={() => setTab('beauty')}>
+                뷰티
+              </TabBtn>
               <TabBtn active={tab === 'crop'} onClick={() => setTab('crop')}>
                 자르기
               </TabBtn>
@@ -445,6 +551,16 @@ export function EditorScreen() {
                     모두 초기화
                   </Button>
                 </div>
+              ) : null}
+
+              {tab === 'beauty' ? (
+                <BeautyPanel
+                  onApply={handleBeautyApply}
+                  ageCapped={ageCapped}
+                  processing={beautyProcessing}
+                  faceCount={faceLandmarks.length}
+                  detectionState={beautyDetectionState}
+                />
               ) : null}
 
               {tab === 'crop' ? (

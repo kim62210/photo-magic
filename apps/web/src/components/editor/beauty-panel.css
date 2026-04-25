@@ -1,0 +1,221 @@
+/**
+ * Beauty panel — Editorial Film Studio aesthetic.
+ *
+ * - Detection pill at top (face count badge)
+ * - 4 sliders (smoothing / whitening / slimming / eye enlarge)
+ * - Apply button with rust-accent treatment
+ * - Privacy notice card with rust border-left
+ * - Optional minor-mode warning bar
+ *
+ * 토큰: tokens.css의 Tier 2/3만 참조.
+ */
+
+.beauty-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* ── Face detection pill ─────────────────────────────── */
+.beauty-panel__detect-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  align-self: flex-start;
+  padding: 6px 12px;
+  border-radius: var(--radius-pill);
+  font-family: var(--font-body);
+  font-size: 13px;
+  line-height: 18px;
+  font-weight: 500;
+  border: 1px solid var(--color-border-subtle);
+  background: var(--color-bg-subtle);
+  color: var(--color-fg-default);
+  transition: background var(--motion-fast) var(--ease-out),
+    border-color var(--motion-fast) var(--ease-out),
+    color var(--motion-fast) var(--ease-out);
+}
+.beauty-panel__detect-pill[data-state='detecting'] {
+  background: var(--color-accent-soft);
+  border-color: var(--color-accent);
+  color: var(--color-accent-hover);
+}
+.beauty-panel__detect-pill[data-state='ok'] {
+  background: var(--state-success-soft);
+  border-color: var(--color-success);
+  color: var(--color-success);
+}
+.beauty-panel__detect-pill[data-state='none'] {
+  background: var(--state-warning-soft);
+  border-color: var(--color-warning);
+  color: var(--color-warning);
+}
+.beauty-panel__detect-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+  flex-shrink: 0;
+  animation: beauty-pulse 1.6s var(--ease-in-out) infinite;
+}
+.beauty-panel__detect-pill[data-state='ok'] .beauty-panel__detect-dot,
+.beauty-panel__detect-pill[data-state='none'] .beauty-panel__detect-dot {
+  animation: none;
+}
+
+@keyframes beauty-pulse {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 1; }
+}
+
+/* ── Heading row ─────────────────────────────────────── */
+.beauty-panel__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+}
+.beauty-panel__title {
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--color-fg-default);
+  margin: 0;
+}
+.beauty-panel__subtitle {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-fg-subtle);
+}
+
+/* ── Sliders block ───────────────────────────────────── */
+.beauty-panel__sliders {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 16px;
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-sm);
+  background: var(--color-bg-base);
+  transition: opacity var(--motion-fast) var(--ease-out);
+}
+.beauty-panel__sliders[aria-disabled='true'] {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+/* ── Apply button row ────────────────────────────────── */
+.beauty-panel__apply-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.beauty-panel__apply-btn {
+  flex: 1;
+  height: 44px;
+  padding: 0 20px;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: var(--color-accent);
+  color: var(--color-accent-on);
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 14px;
+  letter-spacing: -0.01em;
+  cursor: pointer;
+  box-shadow: var(--shadow-xs);
+  transition: background var(--motion-fast) var(--ease-out),
+    box-shadow var(--motion-fast) var(--ease-out),
+    transform var(--motion-fast) var(--ease-out);
+}
+.beauty-panel__apply-btn:hover:not(:disabled) {
+  background: var(--color-accent-hover);
+  box-shadow: var(--shadow-sm);
+}
+.beauty-panel__apply-btn:active:not(:disabled) {
+  transform: translateY(1px);
+}
+.beauty-panel__apply-btn:disabled {
+  background: var(--color-fg-disabled);
+  color: var(--color-bg-base);
+  cursor: not-allowed;
+  box-shadow: none;
+}
+.beauty-panel__apply-btn:focus-visible {
+  outline: none;
+  box-shadow: var(--shadow-focus);
+}
+
+.beauty-panel__processing {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-fg-subtle);
+}
+
+/* ── Minor mode warning bar ──────────────────────────── */
+.beauty-panel__minor-bar {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px 14px;
+  border-radius: var(--radius-sm);
+  background: var(--state-warning-soft);
+  border: 1px solid var(--color-warning);
+  color: var(--color-fg-default);
+  font-family: var(--font-body);
+  font-size: 13px;
+  line-height: 1.5;
+}
+.beauty-panel__minor-bar-icon {
+  font-family: var(--font-mono);
+  font-weight: 700;
+  color: var(--color-warning);
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+.beauty-panel__minor-bar-title {
+  font-weight: 600;
+  display: block;
+  margin-bottom: 2px;
+}
+
+/* ── Privacy notice card ─────────────────────────────── */
+.beauty-panel__privacy {
+  position: relative;
+  padding: 14px 14px 14px 18px;
+  border-radius: var(--radius-sm);
+  background: var(--color-bg-subtle);
+  border: 1px solid var(--color-border-subtle);
+  border-left: 3px solid var(--color-accent);
+  font-family: var(--font-body);
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--color-fg-muted);
+}
+.beauty-panel__privacy-eyebrow {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-accent);
+  margin-bottom: 4px;
+}
+.beauty-panel__privacy-text {
+  margin: 0;
+  color: var(--color-fg-default);
+  font-size: 13px;
+  line-height: 1.55;
+}
+.beauty-panel__privacy-meta {
+  margin-top: 6px;
+  font-size: 12px;
+  color: var(--color-fg-subtle);
+}
